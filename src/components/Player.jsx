@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 function Player() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -6,20 +6,58 @@ function Player() {
   const [activeRow, setActiveRow] = useState(0);
   const [moving, setMoving] = useState(false);
   const [arrowStates, setArrowStates] = useState({up: false, right: false, down: false, left: false});
+  const myArrowState = useRef(arrowStates);
+
+  // const setMyState = data => {
+  //   switch(data) {
+  //     case "up":
+  //       myArrowState.current = {up: true, right: false, down: false, left: false};
+  //       setArrowStates((previous) => ({
+  //         ...previous,
+  //         up: true
+  //       }));
+  //       break;
+  //     case "down":
+  //       myArrowState.current = {up: false, right: false, down: true, left: false};
+  //       setArrowStates((previous) => ({
+  //         ...previous,
+  //         down: true
+  //       }));
+  //       break;
+  //     case "right":
+  //       myArrowState.current = {up: false, right: true, down: false, left: false};
+  //       setArrowStates((previous) => ({
+  //         ...previous,
+  //         right: true
+  //       }));
+  //       break;
+  //     case "left":
+  //       myArrowState.current = {up: false, right: false, down: false, left: true};
+  //       setArrowStates((previous) => ({
+  //         ...previous,
+  //         left: true
+  //       }));
+  //       break;
+  //       default:
+  //         break;
+
+  //   }
+
+  // };
 
   useEffect(() => {
     const handleKeyDown = (event) => {
       const speed = 10; // Adjust the speed as needed
       
-
+      console.log(myArrowState.current)
       switch (event.key) {
         case "ArrowUp":
-          if(arrowStates.left === true) {
+          if(myArrowState.current.left === true) {
             setPosition((prevPosition) => ({
               x: prevPosition.x - speed,
               y: prevPosition.y - speed,
             }));
-          } else if (arrowStates.right === true) {
+          } else if (myArrowState.current.right === true) {
             console.log("moving up right")
             setPosition((prevPosition) => ({
               x: prevPosition.x + speed,
@@ -33,54 +71,85 @@ function Player() {
           }
           setActiveRow(2);
           setMoving(true);
-          if(arrowStates.up !== true) {
-          setArrowStates((previous) => ({
-            ...previous,
-            up: true
-          }));
-        }
+          
+          myArrowState.current = {...myArrowState.current, up: true};
+        
           break;
         case "ArrowDown":
-          setPosition((prevPosition) => ({
-            ...prevPosition,
-            y: prevPosition.y + speed,
-          }));
+          if(myArrowState.current.left === true) {
+            setPosition((prevPosition) => ({
+              x: prevPosition.x - speed,
+              y: prevPosition.y + speed,
+            }));
+          } else if (myArrowState.current.right === true) {
+            console.log("moving up right")
+            setPosition((prevPosition) => ({
+              x: prevPosition.x + speed,
+              y: prevPosition.y + speed,
+            }));
+          } else {
+            setPosition((prevPosition) => ({
+              ...prevPosition,
+              y: prevPosition.y + speed,
+            }));
+          }
           setActiveRow(0);
           setMoving(true);
-          if(arrowStates.down !== true) {
-          setArrowStates((previous) => ({
-            ...previous,
-            down: true
-          }));
-        }
+          myArrowState.current = {...myArrowState.current, down: true};
+
+
           break;
         case "ArrowLeft":
-          setPosition((prevPosition) => ({
-            ...prevPosition,
-            x: prevPosition.x - speed,
-          }));
+          if(myArrowState.current.up === true) {
+            setPosition((prevPosition) => ({
+              x: prevPosition.x - speed,
+              y: prevPosition.y - speed,
+            }));
+          } else if (myArrowState.current.down === true) {
+            console.log("moving up right")
+            setPosition((prevPosition) => ({
+              x: prevPosition.x - speed,
+              y: prevPosition.y + speed,
+            }));
+          } else {
+            setPosition((prevPosition) => ({
+              ...prevPosition,
+              x: prevPosition.x - speed,
+            }));
+          }
           setActiveRow(3);
           setMoving(true);
-          if(arrowStates.left !== true) {
-          setArrowStates((previous) => ({
-            ...previous,
-            left: true
-          }));
-        }
+          
+          myArrowState.current = {...myArrowState.current, left: true};
+
+
+        
           break;
         case "ArrowRight":
-          setPosition((prevPosition) => ({
-            ...prevPosition,
-            x: prevPosition.x + speed,
-          }));
+          if(myArrowState.current.up === true) {
+            setPosition((prevPosition) => ({
+              x: prevPosition.x + speed,
+              y: prevPosition.y - speed,
+            }));
+          } else if (myArrowState.current.down === true) {
+            console.log("moving up right")
+            setPosition((prevPosition) => ({
+              x: prevPosition.x + speed,
+              y: prevPosition.y + speed,
+            }));
+          } else {
+            setPosition((prevPosition) => ({
+              ...prevPosition,
+              x: prevPosition.x + speed,
+            }));
+          }
           setActiveRow(1);
           setMoving(true);
-          if(arrowStates.right !== true) {
-          setArrowStates((previous) => ({
-            ...previous,
-            right: true
-          }));
-        }
+          
+          myArrowState.current = {...myArrowState.current, right: true};
+
+
+        
           break;
         default:
           break;
@@ -91,28 +160,20 @@ function Player() {
       
       switch (event.key) {
         case "ArrowUp":
-          setArrowStates((previous) => ({
-            ...previous,
-            up: false
-          }));
+          myArrowState.current = {...myArrowState.current, up: false};
+
           break;
         case "ArrowDown":
-          setArrowStates((previous) => ({
-            ...previous,
-            down: false
-          }));
+          myArrowState.current = {...myArrowState.current, down: false};
+
           break;
         case "ArrowLeft":
-          setArrowStates((previous) => ({
-            ...previous,
-            left: false
-          }));
+          myArrowState.current = {...myArrowState.current, left: false};
+
           break;
         case "ArrowRight":
-          setArrowStates((previous) => ({
-            ...previous,
-            right: false
-          }));
+          myArrowState.current = {...myArrowState.current, right: false};
+
           break;
         default:
           break;

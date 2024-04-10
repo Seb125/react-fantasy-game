@@ -1,0 +1,17 @@
+#game-container {
+  position: relative;
+}
+
+#player {
+  width: 32px;
+  height: 32px;
+  background-position: -64px -10px;
+}
+
+.container {
+  width: 32px;
+  height: 32px;
+  background-image: url("./assets/Rickettz.png");
+  background-position: -64px -64px; 
+
+}

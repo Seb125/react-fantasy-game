@@ -1,5 +1,16 @@
 #game-container {
   position: relative;
+  background-image: url("./assets/TEST7B.bmp");
+  width: 100vw;
+  height: 100vh;
+  background-size: cover;
+background-repeat: no-repeat;
+background-position: -64px -20px;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
 }
 
 #player {
@@ -12,6 +23,5 @@
   width: 32px;
   height: 32px;
   background-image: url("./assets/Rickettz.png");
-  background-position: -64px -64px; 
 
 }

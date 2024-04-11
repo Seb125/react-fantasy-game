@@ -8,50 +8,12 @@ function Player() {
   const [arrowStates, setArrowStates] = useState({up: false, right: false, down: false, left: false});
   const myArrowState = useRef(arrowStates);
 
-  // const setMyState = data => {
-  //   switch(data) {
-  //     case "up":
-  //       myArrowState.current = {up: true, right: false, down: false, left: false};
-  //       setArrowStates((previous) => ({
-  //         ...previous,
-  //         up: true
-  //       }));
-  //       break;
-  //     case "down":
-  //       myArrowState.current = {up: false, right: false, down: true, left: false};
-  //       setArrowStates((previous) => ({
-  //         ...previous,
-  //         down: true
-  //       }));
-  //       break;
-  //     case "right":
-  //       myArrowState.current = {up: false, right: true, down: false, left: false};
-  //       setArrowStates((previous) => ({
-  //         ...previous,
-  //         right: true
-  //       }));
-  //       break;
-  //     case "left":
-  //       myArrowState.current = {up: false, right: false, down: false, left: true};
-  //       setArrowStates((previous) => ({
-  //         ...previous,
-  //         left: true
-  //       }));
-  //       break;
-  //       default:
-  //         break;
-
-  //   }
-
-  // };
-
   useEffect(() => {
     const handleKeyDown = (event) => {
       const speed = 10; // Adjust the speed as needed
-      
-      console.log(myArrowState.current)
       switch (event.key) {
         case "ArrowUp":
+          
           if(myArrowState.current.left === true) {
             setPosition((prevPosition) => ({
               x: prevPosition.x - speed,

@@ -2,8 +2,6 @@ import Player from "../components/Player";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 function MainScreen() {
   const direction = useRef({ x: 0, y: 0 }); // movement direction, useRef hook, to get current value inside my EventListener
   const [position, setPosition] = useState({ x: 0, y: 0 }); // player position on game screen
@@ -13,67 +11,110 @@ function MainScreen() {
   const [gameOver, setGameOver] = useState(false);
   const animationID = useRef(null);
   const backgroundElement = useRef(null);
+  const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
+  // Loop Variables
+  const [lastTimestamp, setLastTimestamp] = useState(null);
+  const [accumulatedTime, setAccumulatedTime] = useState(0);
+  const [elapsed, setElapsed] = useState(0);
 
+  const frameTime = 60/1000;
   const navigate = useNavigate();
-
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
     setPosition((previousPosition) => {
-      if (
-      
-        previousPosition.x >= window.innerWidth - spriteSize || // Right border
-        
-        previousPosition.y >= window.innerHeight - spriteSize // Bottom border
-      ) {
-        
-         // Get current background position
-      const currentBackgroundPosition = backgroundElement.current.style.backgroundPosition;
-      console.log(currentBackgroundPosition)
+      if (backgroundElement != null) {
+        if (
+          previousPosition.y <= 0 + spriteSize ||
+          previousPosition.x <= 0 + spriteSize ||
+          previousPosition.x >= window.innerWidth - spriteSize || // Right border
+          previousPosition.y >= window.innerHeight - spriteSize // Bottom border
+        ) {
+          const computedStyle = window.getComputedStyle(
+            backgroundElement.current
+          );
 
-      const [currentX, currentY] = currentBackgroundPosition.split(" ");
-      const currentXValue = parseInt(currentX, 10);
-      const currentYValue = parseInt(currentY, 10);
-  
-      // Subtract 10 from current background position
-      const newX = currentXValue - 10;
-      const newY = currentYValue - 10;
-      
-  
-      // Update background position
-      
-        backgroundElement.current.style.backgroundPosition = `${newX}px ${newY}px`;
+          // Get the backgroundPosition property from the computed style
+          const bgp = computedStyle.getPropertyValue("background-position");
+          // calculate new background Position
+          const [currentX, currentY] = bgp.split(" ");
+          const currentXValue = parseInt(currentX, 10);
+          const currentYValue = parseInt(currentY, 10);
+
+          // if the window is bigger than the fixed gamescreen no scrolling is necesseary, otherwise only the amount of the difference
+          const maxXScroll = 640 - window.innerWidth;
+          const maxYScroll = 480 - window.innerHeight;
+
+          // Subtract 10 from current background position
+          // only chnage position under the condition that the Player is not at end of the background picture
+          let newX;
+          let newY;
+
+          if (!(currentXValue >= 0) && (previousPosition.x <= 0 + spriteSize) ) {
+            newX = currentXValue + 10;
+          } else if (!(currentXValue <= -maxXScroll) && (previousPosition.x >= window.innerWidth - spriteSize)) {
+            newX = currentXValue - 10;
+          }else{
+            newX = currentXValue;
+          }
+          if (!(currentYValue >= 0) && (previousPosition.y <= 0 + spriteSize)) {
+            newY = currentYValue + 10;
+          } else if (!(currentYValue <= -maxYScroll) && (previousPosition.y >= window.innerHeight - spriteSize)) {
+            newY = currentYValue - 10;
+          }else{
+            newY = currentYValue;
+          }
+          setBackgroundPosition(`${newX}px ${newY}px`);
+        }
       }
       const newPosition = {
-      x: previousPosition.x + direction.current.x,
-      y: previousPosition.y + direction.current.y
-      }
+        x: previousPosition.x + direction.current.x,
+        y: previousPosition.y + direction.current.y,
+      };
       return newPosition;
-  });
-    
+    });
+
     animateSprite();
   };
 
   const animateSprite = () => {
-    if(direction.current.x !== 0 || direction.current.y !== 0 ) {
-      
+    if (direction.current.x !== 0 || direction.current.y !== 0) {
       setCounter((prevCount) => {
         if (prevCount % 10 === 0) {
           setFrameIndex((prevIndex) => (prevIndex + 1) % 4);
         }
-        return prevCount +1;
+        return prevCount + 1;
       });
     }
   };
 
+ 
   // game Loop, called recursively
-  const gameLoop = () => {
+  const gameLoop = (timestamp) => {
     if (gameOver === true) return;
+    
+    
 
-    update();
-
-    animationID.current = window.requestAnimationFrame(() => gameLoop());
-  };
+    setLastTimestamp((previousTimestamp) => {
+      if (!previousTimestamp) {
+        return timestamp; // If lastTimestamp is not set, set it to current timestamp
+      }
+  
+      const elapsedTime = timestamp - previousTimestamp; // Calculate elapsed time
+      console.log(elapsedTime)
+      setAccumulatedTime((previousAcc) => {
+        if (previousAcc >= frameTime) {
+          update();
+          return 0;
+        }
+        return previousAcc + elapsedTime;
+      });
+  
+      return timestamp; // Update lastTimestamp with current timestamp
+    });
+    
+    animationID.current = window.requestAnimationFrame(gameLoop);
+    }
 
   // on the first loading of the DOM EventListeners are created, that watch arrow Keys for player movement
   useEffect(() => {
@@ -141,20 +182,24 @@ function MainScreen() {
   //   console.log(counter)
   // }
   const endGame = () => {
-    
     setGameOver(true);
-    
+
     if (animationID.current) {
       window.cancelAnimationFrame(animationID.current);
     }
 
     // Redirect to Game Over Screen
-    navigate("/game-over")
-    }
+    navigate("/game-over");
+  };
 
-  
   return (
-    <div id="game-container" >
+    <div
+      id="game-container"
+      style={{
+        backgroundPosition: backgroundPosition,
+        transition: "background-position 1s",
+      }}
+    >
       <button onClick={endGame}>EndGame</button>
       <Player position={position} frameX={frameX} frameY={frameY} />
     </div>

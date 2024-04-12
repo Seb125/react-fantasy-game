@@ -1,11 +1,10 @@
 #game-container {
   position: relative;
   background-image: url("./assets/TEST7B.bmp");
-  width: 100vw;
-  height: 100vh;
-  background-size: cover;
-background-repeat: no-repeat;
-background-position: -64px -20px;
+  width: 640px;
+  height: 640px;
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
 }
 
 #root {
@@ -23,5 +22,4 @@ background-position: -64px -20px;
   width: 32px;
   height: 32px;
   background-image: url("./assets/Rickettz.png");
-
 }

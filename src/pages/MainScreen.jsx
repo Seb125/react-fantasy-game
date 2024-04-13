@@ -12,7 +12,8 @@ function MainScreen() {
   const animationID = useRef(null);
   const backgroundElement = useRef(null);
   const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
-  const screenMoving = useRef({down: false, up: false, left: false, right: false});
+  const isScreenMoving = useRef(false); // Track if the screen is moving
+
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
@@ -25,12 +26,7 @@ function MainScreen() {
   const update = () => {
     setPosition((previousPosition) => {
       if (backgroundElement != null) {
-        if (
-          previousPosition.y <= 0 + spriteSize ||
-          previousPosition.x <= 0 + spriteSize ||
-          previousPosition.x >= window.innerWidth - 2*spriteSize || // Right border
-          previousPosition.y >= window.innerHeight - 2*spriteSize // Bottom border
-        ) {
+        
           const computedStyle = window.getComputedStyle(
             backgroundElement.current
           );
@@ -52,69 +48,45 @@ function MainScreen() {
           let newY;
           // left side
           if (!(currentXValue >= 0) && (previousPosition.x <= 0 + spriteSize)) {
-            screenMoving.current = {down: false, up: false, left: true, right: false};
+            isScreenMoving.current = true;
             newX = currentXValue + 10;
           } else if (!(currentXValue <= -maxXScroll) && (previousPosition.x >= (window.innerWidth - 2*spriteSize))) { // right side
-            screenMoving.current = {down: false, up: false, left: false, right: true};
+            isScreenMoving.current = true;
 
             newX = currentXValue - 10;
           }else{
-            screenMoving.current = false;
+            isScreenMoving.current = false;
+
             newX = currentXValue;
           }
           // top side
           if (!(currentYValue >= 0) && (previousPosition.y <= 0 + spriteSize)) {
-            screenMoving.current = {down: false, up: true, left: false, right: false};
+            isScreenMoving.current = true;
 
             newY = currentYValue + 10;
           } else if (!(currentYValue <= -maxYScroll) && (previousPosition.y >= (window.innerHeight - 2*spriteSize))) { // bottom side
-            screenMoving.current = {down: true, up: false, left: false, right: false};
+            isScreenMoving.current = true;
 
             newY = currentYValue - 10;
           }else{
-            screenMoving.current = false;
+            isScreenMoving.current = false;
+
             newY = currentYValue;
           }
           setBackgroundPosition(`${newX}px ${newY}px`);
-        }
+        
       }
       // player should not be able to walk past the map
       let newPosition;
       // first check if the player is not at any border, so none of the other conditions have to be checked
       if(previousPosition.x > 0 && previousPosition.x < 620 && previousPosition.y > 0 && previousPosition.y < 450) {
         // !!!!!!!!!!!!!!!!!!!!!!!!! Here I want to adjust Players Position based on the background moving or not
-       if(!screenMoving.current.right && !screenMoving.current.left && !screenMoving.current.up && !screenMoving.current.down) {
-        console.log(screenMoving.current.up)
-
-        newPosition = {
-        
-          x: previousPosition.x + direction.current.x,
-          y: previousPosition.y + direction.current.y,
-      }
-       } else if(screenMoving.current.right) {
-          newPosition = {
-        
-            x: previousPosition.x + direction.current.x -10,
-            y: previousPosition.y + direction.current.y,
-        }
-        } else if (screenMoving.current.left) {
-        newPosition = {
-        
-          x: previousPosition.x + direction.current.x + 10,
-          y: previousPosition.y + direction.current.y,
-      }
-    } else if (screenMoving.current.up) {
+      
       newPosition = {
         
         x: previousPosition.x + direction.current.x,
-        y: previousPosition.y + direction.current.y +10,
-    }
-    } else if (screenMoving.current.down) {
-      newPosition = {
-        
-        x: previousPosition.x + direction.current.x,
-        y: previousPosition.y + direction.current.y -10,
-    }
+        y: previousPosition.y + direction.current.y,
+    
     }
       } else if(previousPosition.x <= 0 && previousPosition.y <= 0) { // check if player is in the upper left corner
         if(direction.current.x > 0) {
@@ -259,15 +231,20 @@ function MainScreen() {
   };
 
   const animateSprite = () => {
-    if (direction.current.x !== 0 || direction.current.y !== 0) {
       setCounter((prevCount) => {
         if (prevCount % 10 === 0) {
+          if(direction.current.x !== 0 || direction.current.y !== 0) {
+            setFrameIndex((prevIndex) => (prevIndex + 1) % 4);
+          } else if(isScreenMoving.current === true) {
+            console.log("not Moving but sliding")
+
           setFrameIndex((prevIndex) => (prevIndex + 1) % 4);
         }
+      }
         return prevCount + 1;
       });
     }
-  };
+  
 
  
   // game Loop, called recursively

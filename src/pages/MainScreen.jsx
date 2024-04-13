@@ -12,6 +12,7 @@ function MainScreen() {
   const animationID = useRef(null);
   const backgroundElement = useRef(null);
   const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
+  const screenMoving = useRef({down: false, up: false, left: false, right: false});
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
@@ -27,8 +28,8 @@ function MainScreen() {
         if (
           previousPosition.y <= 0 + spriteSize ||
           previousPosition.x <= 0 + spriteSize ||
-          previousPosition.x >= window.innerWidth - spriteSize || // Right border
-          previousPosition.y >= window.innerHeight - spriteSize // Bottom border
+          previousPosition.x >= window.innerWidth - 2*spriteSize || // Right border
+          previousPosition.y >= window.innerHeight - 2*spriteSize // Bottom border
         ) {
           const computedStyle = window.getComputedStyle(
             backgroundElement.current
@@ -49,28 +50,208 @@ function MainScreen() {
           // only chnage position under the condition that the Player is not at end of the background picture
           let newX;
           let newY;
-
-          if (!(currentXValue >= 0) && (previousPosition.x <= 0 + spriteSize) ) {
+          // left side
+          if (!(currentXValue >= 0) && (previousPosition.x <= 0 + spriteSize)) {
+            screenMoving.current = {down: false, up: false, left: true, right: false};
             newX = currentXValue + 10;
-          } else if (!(currentXValue <= -maxXScroll) && (previousPosition.x >= window.innerWidth - spriteSize)) {
+          } else if (!(currentXValue <= -maxXScroll) && (previousPosition.x >= (window.innerWidth - 2*spriteSize))) { // right side
+            screenMoving.current = {down: false, up: false, left: false, right: true};
+
             newX = currentXValue - 10;
           }else{
+            screenMoving.current = false;
             newX = currentXValue;
           }
+          // top side
           if (!(currentYValue >= 0) && (previousPosition.y <= 0 + spriteSize)) {
+            screenMoving.current = {down: false, up: true, left: false, right: false};
+
             newY = currentYValue + 10;
-          } else if (!(currentYValue <= -maxYScroll) && (previousPosition.y >= window.innerHeight - spriteSize)) {
+          } else if (!(currentYValue <= -maxYScroll) && (previousPosition.y >= (window.innerHeight - 2*spriteSize))) { // bottom side
+            screenMoving.current = {down: true, up: false, left: false, right: false};
+
             newY = currentYValue - 10;
           }else{
+            screenMoving.current = false;
             newY = currentYValue;
           }
           setBackgroundPosition(`${newX}px ${newY}px`);
         }
       }
-      const newPosition = {
+      // player should not be able to walk past the map
+      let newPosition;
+      // first check if the player is not at any border, so none of the other conditions have to be checked
+      if(previousPosition.x > 0 && previousPosition.x < 620 && previousPosition.y > 0 && previousPosition.y < 450) {
+        // !!!!!!!!!!!!!!!!!!!!!!!!! Here I want to adjust Players Position based on the background moving or not
+       if(!screenMoving.current.right && !screenMoving.current.left && !screenMoving.current.up && !screenMoving.current.down) {
+        console.log(screenMoving.current.up)
+
+        newPosition = {
+        
+          x: previousPosition.x + direction.current.x,
+          y: previousPosition.y + direction.current.y,
+      }
+       } else if(screenMoving.current.right) {
+          newPosition = {
+        
+            x: previousPosition.x + direction.current.x -10,
+            y: previousPosition.y + direction.current.y,
+        }
+        } else if (screenMoving.current.left) {
+        newPosition = {
+        
+          x: previousPosition.x + direction.current.x + 10,
+          y: previousPosition.y + direction.current.y,
+      }
+    } else if (screenMoving.current.up) {
+      newPosition = {
+        
         x: previousPosition.x + direction.current.x,
-        y: previousPosition.y + direction.current.y,
-      };
+        y: previousPosition.y + direction.current.y +10,
+    }
+    } else if (screenMoving.current.down) {
+      newPosition = {
+        
+        x: previousPosition.x + direction.current.x,
+        y: previousPosition.y + direction.current.y -10,
+    }
+    }
+      } else if(previousPosition.x <= 0 && previousPosition.y <= 0) { // check if player is in the upper left corner
+        if(direction.current.x > 0) {
+          newPosition = {
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y
+          }
+        } else if (direction.current.y > 0){
+          newPosition = {
+            x: previousPosition.x ,
+            y: previousPosition.y + direction.current.y
+          }
+        } else {
+          newPosition = {
+            x: previousPosition.x ,
+            y: previousPosition.y
+          }
+        }
+      } else if (previousPosition.x <= 0 && !(previousPosition.y <= 0) && !(previousPosition.y >= 450)) {
+        // checking left border
+        
+        if(direction.current.x < 0) {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y + direction.current.y
+          }
+        } else if(direction.current.x >= 0) {
+          newPosition = {
+        
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y + direction.current.y,
+        }
+        }
+      } 
+      else if (previousPosition.x >= 620 && !(previousPosition.y <= 0) && !(previousPosition.y >= 450)) { // checking right border
+        console.log(previousPosition.x)
+        if(direction.current.x > 0) {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y + direction.current.y
+          }
+        } else if(direction.current.x <= 0) {
+          newPosition = {
+        
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y + direction.current.y,
+        }
+        }
+      }else if (previousPosition.x <= 0 && previousPosition.y >= 450) { // checking is in lower left corner
+        
+
+        if(direction.current.x > 0) {
+          newPosition = {
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y
+          }
+        } else if(direction.current.y < 0) {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y +  direction.current.y
+          }
+        } else {
+          newPosition = {
+            x: previousPosition.x ,
+            y: previousPosition.y
+          }
+        }
+        console.log(newPosition)
+      } else if (previousPosition.y >= 450 && !(previousPosition.x <= 0) && !(previousPosition.x >= 620)){ // checking if player is at the bottom of the map
+        
+        if(direction.current.y > 0) {
+          newPosition = {
+            x: previousPosition.x +direction.current.x,
+            y: previousPosition.y
+          }
+        } else if (direction.current.y <= 0) {
+          newPosition = {
+            x: previousPosition.x +direction.current.x,
+            y: previousPosition.y + direction.current.y
+          }
+        }
+      } else if (previousPosition.y <= 0 && !(previousPosition.x <= 0) && !(previousPosition.x >= 620)) { // checking upper border
+        if(direction.current.y < 0) {
+          newPosition = {
+            x: previousPosition.x +direction.current.x,
+            y: previousPosition.y
+          }
+        } else if (direction.current.y >= 0) {
+          newPosition = {
+            x: previousPosition.x +direction.current.x,
+            y: previousPosition.y + direction.current.y
+          }
+        }
+      } else if(previousPosition.x >= 620 && previousPosition.y <= 0) { // check if player is in the upper right corner
+        if(direction.current.x < 0) {
+          newPosition = {
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y
+          }
+        } else if (direction.current.y > 0){
+          newPosition = {
+            x: previousPosition.x ,
+            y: previousPosition.y + direction.current.y
+          }
+        } else {
+          newPosition = {
+            x: previousPosition.x ,
+            y: previousPosition.y
+          }
+        } }
+        else if(previousPosition.y >= 450 && previousPosition.x >= 620) { // check if player is in the lower right corner
+          if(direction.current.x < 0) {
+            newPosition = {
+              x: previousPosition.x + direction.current.x,
+              y: previousPosition.y
+            }
+          } else if (direction.current.y < 0){
+            newPosition = {
+              x: previousPosition.x ,
+              y: previousPosition.y + direction.current.y
+            }
+          } else {
+            newPosition = {
+              x: previousPosition.x ,
+              y: previousPosition.y
+            }
+          } }
+      else {  
+        newPosition = {
+        
+          x: previousPosition.x + direction.current.x,
+          y: previousPosition.y + direction.current.y,
+      }
+      }
+        
+    
+
       return newPosition;
     });
 
@@ -101,7 +282,7 @@ function MainScreen() {
       }
   
       const elapsedTime = timestamp - previousTimestamp; // Calculate elapsed time
-      console.log(elapsedTime)
+      
       setAccumulatedTime((previousAcc) => {
         if (previousAcc >= frameTime) {
           update();
@@ -197,7 +378,7 @@ function MainScreen() {
       id="game-container"
       style={{
         backgroundPosition: backgroundPosition,
-        transition: "background-position 1s",
+        transition: "background-position 0.1s",
       }}
     >
       <button onClick={endGame}>EndGame</button>

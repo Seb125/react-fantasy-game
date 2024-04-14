@@ -14,17 +14,22 @@ function MainScreen() {
   const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
   const isScreenMoving = useRef(false); // Track if the screen is moving
   const pressedKeys = useRef({up: false, down: false, left: false, right: false}); // Keeping track of presse keys to display correct sprite
+  const [spriteSize, setSpriteSize] = useState(32);
+  const borders = useRef({bottom: window.innerHeight > 1024? 1024 - spriteSize: window.innerHeight - spriteSize, right: window.innerWidth > 1792? 1792 - spriteSize : window.innerWidth - spriteSize});
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
   const [elapsed, setElapsed] = useState(0);
 
   const frameTime = 60 / 1000;
+  
+  const framesPerRow = 4; // Number of sprites in each row
   const navigate = useNavigate();
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
     setPosition((previousPosition) => {
+      console.log(previousPosition.y)
       if (backgroundElement != null) {
         const computedStyle = window.getComputedStyle(
           backgroundElement.current
@@ -38,8 +43,8 @@ function MainScreen() {
         const currentYValue = parseInt(currentY, 10);
 
         // if the window is bigger than the fixed gamescreen no scrolling is necesseary, otherwise only the amount of the difference
-        const maxXScroll = 640 - window.innerWidth;
-        const maxYScroll = 480 - window.innerHeight;
+        const maxXScroll = 1792 - window.innerWidth;
+        const maxYScroll = 1024 - window.innerHeight;
 
         // Subtract 10 from current background position
         // only chnage position under the condition that the Player is not at end of the background picture
@@ -84,16 +89,15 @@ function MainScreen() {
         setBackgroundPosition(`${newX}px ${newY}px`);
       }
       // player should not be able to walk past the map
+      // !!!!!!!!!!!!!!!!!!!!!!!! The border confinements need to be made dynamic; when the background image is move the borders need to be updated 
       let newPosition;
       // first check if the player is not at any border, so none of the other conditions have to be checked
       if (
         previousPosition.x > 0 &&
-        previousPosition.x < 620 &&
+        previousPosition.x < borders.current.right &&
         previousPosition.y > 0 &&
-        previousPosition.y < 450
+        previousPosition.y < borders.current.bottom
       ) {
-        // !!!!!!!!!!!!!!!!!!!!!!!!! Here I want to adjust Players Position based on the background moving or not
-
         newPosition = {
           x: previousPosition.x + direction.current.x,
           y: previousPosition.y + direction.current.y,
@@ -119,7 +123,7 @@ function MainScreen() {
       } else if (
         previousPosition.x <= 0 &&
         !(previousPosition.y <= 0) &&
-        !(previousPosition.y >= 450)
+        !(previousPosition.y >= borders.current.bottom)
       ) {
         // checking left border
 
@@ -135,12 +139,12 @@ function MainScreen() {
           };
         }
       } else if (
-        previousPosition.x >= 620 &&
+        previousPosition.x >= borders.current.right &&
         !(previousPosition.y <= 0) &&
-        !(previousPosition.y >= 450)
+        !(previousPosition.y >= borders.current.bottom)
       ) {
         // checking right border
-        console.log(previousPosition.x);
+        
         if (direction.current.x > 0) {
           newPosition = {
             x: previousPosition.x,
@@ -152,7 +156,7 @@ function MainScreen() {
             y: previousPosition.y + direction.current.y,
           };
         }
-      } else if (previousPosition.x <= 0 && previousPosition.y >= 450) {
+      } else if (previousPosition.x <= 0 && previousPosition.y >= borders.current.bottom) {
         // checking is in lower left corner
 
         if (direction.current.x > 0) {
@@ -172,9 +176,9 @@ function MainScreen() {
           };
         }
       } else if (
-        previousPosition.y >= 450 &&
+        previousPosition.y >= borders.current.bottom &&
         !(previousPosition.x <= 0) &&
-        !(previousPosition.x >= 620)
+        !(previousPosition.x >= borders.current.right)
       ) {
         // checking if player is at the bottom of the map
 
@@ -192,7 +196,7 @@ function MainScreen() {
       } else if (
         previousPosition.y <= 0 &&
         !(previousPosition.x <= 0) &&
-        !(previousPosition.x >= 620)
+        !(previousPosition.x >= borders.current.right)
       ) {
         // checking upper border
         if (direction.current.y < 0) {
@@ -206,7 +210,7 @@ function MainScreen() {
             y: previousPosition.y + direction.current.y,
           };
         }
-      } else if (previousPosition.x >= 620 && previousPosition.y <= 0) {
+      } else if (previousPosition.x >= borders.current.right && previousPosition.y <= 0) {
         // check if player is in the upper right corner
         if (direction.current.x < 0) {
           newPosition = {
@@ -224,7 +228,7 @@ function MainScreen() {
             y: previousPosition.y,
           };
         }
-      } else if (previousPosition.y >= 450 && previousPosition.x >= 620) {
+      } else if (previousPosition.y >= borders.current.bottom && previousPosition.x >= borders.current.right) {
         // check if player is in the lower right corner
         if (direction.current.x < 0) {
           newPosition = {
@@ -286,6 +290,15 @@ function MainScreen() {
     } else if(pressedKeys.current.right) {
       return "right";
     }
+  }
+
+  // Update movement boundaries
+
+  const updateBoundaries = () => {
+    borders.current.bottom = window.innerHeight > 1024 ? 1024 - spriteSize: window.innerHeight - spriteSize; // border should never exeed image size
+    borders.current.right = window.innerWidth > 1792 ? 1792 - spriteSize : window.innerWidth - spriteSize;
+    // Reload the page
+    location.reload();
   }
 
   // game Loop, called recursively
@@ -360,7 +373,7 @@ function MainScreen() {
 
     const handleKeyUp = (event) => {
       switch (event.key) {
-        case "ArrowUp":
+        case "ArrowUp": 
           direction.current.y = 0;
           pressedKeys.current.up = false;
           break;
@@ -402,6 +415,8 @@ function MainScreen() {
     gameLoop();
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+    // event listener for window size is needed to change movement borders dynamically
+    window.addEventListener('resize', updateBoundaries);
 
     // getting DOM element after it has mounted
     backgroundElement.current = document.getElementById("game-container");
@@ -410,9 +425,6 @@ function MainScreen() {
       window.removeEventListener("keyup", handleKeyDown);
     };
   }, []); // Empty dependency array to run effect only once
-
-  const spriteSize = 32; // Size of each sprite (assuming 32x32)
-  const framesPerRow = 4; // Number of sprites in each row
 
   const frameX = (frameIndex % framesPerRow) * spriteSize; // frameX contains the number of pixels the sprite sheet needs to be moved so the next sprite becomes visible in a certian row
   const frameY = activeRow * spriteSize;

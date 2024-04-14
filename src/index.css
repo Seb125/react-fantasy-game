@@ -1,8 +1,8 @@
 #game-container {
   position: relative;
-  background-image: url("./assets/TEST7B.bmp");
-  width: 640px;
-  height: 480px;
+  background-image: url("./assets/background.webp");
+  width: 1792px;
+  height: 1024px;
   background-repeat: no-repeat;
   background-position: 0px 0px;
 }

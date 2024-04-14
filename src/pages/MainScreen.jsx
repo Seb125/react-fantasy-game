@@ -13,7 +13,7 @@ function MainScreen() {
   const backgroundElement = useRef(null);
   const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
   const isScreenMoving = useRef(false); // Track if the screen is moving
-  const pressedKeys = useRef({up: false, fown: false, left: false, right: false}); // Keeping track of presse keys to display correct sprite
+  const pressedKeys = useRef({up: false, down: false, left: false, right: false}); // Keeping track of presse keys to display correct sprite
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
@@ -268,6 +268,26 @@ function MainScreen() {
     });
   };
 
+  const checkMovementDirection = () => {
+    if(pressedKeys.current.up && pressedKeys.current.left) {
+      return "left";
+    } else if(pressedKeys.current.up && pressedKeys.current.right){
+      return "right";
+    } else if(pressedKeys.current.down && pressedKeys.current.left) {
+      return "left";
+    } else if(pressedKeys.current.down && pressedKeys.current.right) {
+      return "right";
+    } else if(pressedKeys.current.up) {
+      return "up";
+    } else if(pressedKeys.current.down) {
+      return "down";
+    } else if(pressedKeys.current.left) {
+      return "left";
+    } else if(pressedKeys.current.right) {
+      return "right";
+    }
+  }
+
   // game Loop, called recursively
   const gameLoop = (timestamp) => {
     if (gameOver === true) return;
@@ -300,42 +320,84 @@ function MainScreen() {
       switch (event.key) {
         case "ArrowUp":
           direction.current.y = -1;
-          setActiveRow(2);
+          pressedKeys.current.up = true;
           break;
         case "ArrowDown":
           direction.current.y = 1;
-          setActiveRow(0);
+          pressedKeys.current.down = true;
           break;
         case "ArrowLeft":
           direction.current.x = -1;
-          setActiveRow(3);
+          pressedKeys.current.left = true;
           break;
         case "ArrowRight":
           direction.current.x = 1;
-          setActiveRow(1);
+          pressedKeys.current.right = true;
           break;
         default:
           break;
       }
+      // Here I want to check which keys are pressed down after the latest Keydown event and accordingly switch rows in my sprite
+      let spriteRow;
+      spriteRow = checkMovementDirection();
+          switch(spriteRow) {
+            case "up":
+              setActiveRow(2);
+              break;
+            case "down":
+              setActiveRow(0);
+              break;
+            case "left":
+              setActiveRow(3);
+              break;
+            case "right":
+              setActiveRow(1);
+              break;
+            default:
+              break;
+          }
     };
 
     const handleKeyUp = (event) => {
       switch (event.key) {
         case "ArrowUp":
           direction.current.y = 0;
+          pressedKeys.current.up = false;
           break;
         case "ArrowDown":
           direction.current.y = 0;
+          pressedKeys.current.down = false;
           break;
         case "ArrowLeft":
           direction.current.x = 0;
+          pressedKeys.current.left = false;
           break;
         case "ArrowRight":
           direction.current.x = 0;
+          pressedKeys.current.right = false;
           break;
         default:
           break;
       }
+      // Here I want to check which keys are pressed down after the latest KeyUp event and accordingly switch rows in my sprite
+      let spriteRow;
+      spriteRow = checkMovementDirection();
+          switch(spriteRow) {
+            case "up":
+              setActiveRow(2);
+              break;
+            case "down":
+              setActiveRow(0);
+              break;
+            case "left":
+              setActiveRow(3);
+              break;
+            case "right":
+              setActiveRow(1);
+              break;
+            default:
+              break;
+          }
     };
     gameLoop();
     window.addEventListener("keydown", handleKeyDown);

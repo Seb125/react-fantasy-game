@@ -13,23 +13,37 @@ function MainScreen() {
   const backgroundElement = useRef(null);
   const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
   const isScreenMoving = useRef(false); // Track if the screen is moving
-  const pressedKeys = useRef({up: false, down: false, left: false, right: false}); // Keeping track of presse keys to display correct sprite
+  const pressedKeys = useRef({
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  }); // Keeping track of presse keys to display correct sprite
   const [spriteSize, setSpriteSize] = useState(32);
-  const borders = useRef({bottom: window.innerHeight > 1024? 1024 - spriteSize: window.innerHeight - spriteSize, right: window.innerWidth > 1792? 1792 - spriteSize : window.innerWidth - spriteSize});
+  const borders = useRef({
+    bottom:
+      window.innerHeight > 1024
+        ? 1024 - spriteSize
+        : window.innerHeight - spriteSize,
+    right:
+      window.innerWidth > 1792
+        ? 1792 - spriteSize
+        : window.innerWidth - spriteSize,
+  });
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
   const [elapsed, setElapsed] = useState(0);
 
   const frameTime = 60 / 1000;
-  
+
   const framesPerRow = 4; // Number of sprites in each row
   const navigate = useNavigate();
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
     setPosition((previousPosition) => {
-      console.log(previousPosition.y)
+      console.log(previousPosition.y);
       if (backgroundElement != null) {
         const computedStyle = window.getComputedStyle(
           backgroundElement.current
@@ -89,76 +103,18 @@ function MainScreen() {
         setBackgroundPosition(`${newX}px ${newY}px`);
       }
       // player should not be able to walk past the map
-      // !!!!!!!!!!!!!!!!!!!!!!!! The border confinements need to be made dynamic; when the background image is move the borders need to be updated 
       let newPosition;
-      // first check if the player is not at any border, so none of the other conditions have to be checked
-      if (
-        previousPosition.x > 0 &&
-        previousPosition.x < borders.current.right &&
-        previousPosition.y > 0 &&
-        previousPosition.y < borders.current.bottom
-      ) {
+      const bottomBorder = previousPosition.y >= borders.current.bottom;
+      const upperBorder = previousPosition.y <= 0;
+      const leftBorder = previousPosition.x <= 0;
+      const rightBorder = previousPosition.x >= borders.current.right;
+
+      if (!bottomBorder && !upperBorder && !leftBorder && !rightBorder) {
         newPosition = {
           x: previousPosition.x + direction.current.x,
           y: previousPosition.y + direction.current.y,
         };
-      } else if (previousPosition.x <= 0 && previousPosition.y <= 0) {
-        // check if player is in the upper left corner
-        if (direction.current.x > 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y > 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
-          };
-        }
-      } else if (
-        previousPosition.x <= 0 &&
-        !(previousPosition.y <= 0) &&
-        !(previousPosition.y >= borders.current.bottom)
-      ) {
-        // checking left border
-
-        if (direction.current.x < 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else if (direction.current.x >= 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        }
-      } else if (
-        previousPosition.x >= borders.current.right &&
-        !(previousPosition.y <= 0) &&
-        !(previousPosition.y >= borders.current.bottom)
-      ) {
-        // checking right border
-        
-        if (direction.current.x > 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else if (direction.current.x <= 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        }
-      } else if (previousPosition.x <= 0 && previousPosition.y >= borders.current.bottom) {
-        // checking is in lower left corner
-
+      } else if (bottomBorder && leftBorder) {
         if (direction.current.x > 0) {
           newPosition = {
             x: previousPosition.x + direction.current.x,
@@ -175,13 +131,58 @@ function MainScreen() {
             y: previousPosition.y,
           };
         }
-      } else if (
-        previousPosition.y >= borders.current.bottom &&
-        !(previousPosition.x <= 0) &&
-        !(previousPosition.x >= borders.current.right)
-      ) {
-        // checking if player is at the bottom of the map
-
+      } else if (bottomBorder && rightBorder) {
+        if (direction.current.x < 0) {
+          newPosition = {
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y,
+          };
+        } else if (direction.current.y < 0) {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y + direction.current.y,
+          };
+        } else {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y,
+          };
+        }
+      } else if (leftBorder && upperBorder) {
+        if (direction.current.x > 0) {
+          newPosition = {
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y,
+          };
+        } else if (direction.current.y > 0) {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y + direction.current.y,
+          };
+        } else {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y,
+          };
+        }
+      } else if (upperBorder && rightBorder) {
+        if (direction.current.x < 0) {
+          newPosition = {
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y,
+          };
+        } else if (direction.current.y > 0) {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y + direction.current.y,
+          };
+        } else {
+          newPosition = {
+            x: previousPosition.x,
+            y: previousPosition.y,
+          };
+        }
+      } else if (bottomBorder) {
         if (direction.current.y > 0) {
           newPosition = {
             x: previousPosition.x + direction.current.x,
@@ -193,12 +194,7 @@ function MainScreen() {
             y: previousPosition.y + direction.current.y,
           };
         }
-      } else if (
-        previousPosition.y <= 0 &&
-        !(previousPosition.x <= 0) &&
-        !(previousPosition.x >= borders.current.right)
-      ) {
-        // checking upper border
+      } else if (upperBorder) {
         if (direction.current.y < 0) {
           newPosition = {
             x: previousPosition.x + direction.current.x,
@@ -210,47 +206,30 @@ function MainScreen() {
             y: previousPosition.y + direction.current.y,
           };
         }
-      } else if (previousPosition.x >= borders.current.right && previousPosition.y <= 0) {
-        // check if player is in the upper right corner
+      } else if (leftBorder) {
         if (direction.current.x < 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y > 0) {
           newPosition = {
             x: previousPosition.x,
             y: previousPosition.y + direction.current.y,
           };
-        } else {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
-          };
-        }
-      } else if (previousPosition.y >= borders.current.bottom && previousPosition.x >= borders.current.right) {
-        // check if player is in the lower right corner
-        if (direction.current.x < 0) {
+        } else if (direction.current.x >= 0) {
           newPosition = {
             x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
+            y: previousPosition.y + direction.current.y,
           };
-        } else if (direction.current.y < 0) {
+        }
+      } else if (rightBorder) {
+        if (direction.current.x > 0) {
           newPosition = {
             x: previousPosition.x,
             y: previousPosition.y + direction.current.y,
           };
-        } else {
+        } else if (direction.current.x <= 0) {
           newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
+            x: previousPosition.x + direction.current.x,
+            y: previousPosition.y + direction.current.y,
           };
         }
-      } else {
-        newPosition = {
-          x: previousPosition.x + direction.current.x,
-          y: previousPosition.y + direction.current.y,
-        };
       }
 
       return newPosition;
@@ -271,35 +250,41 @@ function MainScreen() {
       return prevCount + 1;
     });
   };
-
+  // movement direction is checked to use the correct sprites
   const checkMovementDirection = () => {
-    if(pressedKeys.current.up && pressedKeys.current.left) {
+    if (pressedKeys.current.up && pressedKeys.current.left) {
       return "left";
-    } else if(pressedKeys.current.up && pressedKeys.current.right){
+    } else if (pressedKeys.current.up && pressedKeys.current.right) {
       return "right";
-    } else if(pressedKeys.current.down && pressedKeys.current.left) {
+    } else if (pressedKeys.current.down && pressedKeys.current.left) {
       return "left";
-    } else if(pressedKeys.current.down && pressedKeys.current.right) {
+    } else if (pressedKeys.current.down && pressedKeys.current.right) {
       return "right";
-    } else if(pressedKeys.current.up) {
+    } else if (pressedKeys.current.up) {
       return "up";
-    } else if(pressedKeys.current.down) {
+    } else if (pressedKeys.current.down) {
       return "down";
-    } else if(pressedKeys.current.left) {
+    } else if (pressedKeys.current.left) {
       return "left";
-    } else if(pressedKeys.current.right) {
+    } else if (pressedKeys.current.right) {
       return "right";
     }
-  }
+  };
 
   // Update movement boundaries
 
   const updateBoundaries = () => {
-    borders.current.bottom = window.innerHeight > 1024 ? 1024 - spriteSize: window.innerHeight - spriteSize; // border should never exeed image size
-    borders.current.right = window.innerWidth > 1792 ? 1792 - spriteSize : window.innerWidth - spriteSize;
+    borders.current.bottom =
+      window.innerHeight > 1024
+        ? 1024 - spriteSize
+        : window.innerHeight - spriteSize; // border should never exeed image size
+    borders.current.right =
+      window.innerWidth > 1792
+        ? 1792 - spriteSize
+        : window.innerWidth - spriteSize;
     // Reload the page
     location.reload();
-  }
+  };
 
   // game Loop, called recursively
   const gameLoop = (timestamp) => {
@@ -353,27 +338,27 @@ function MainScreen() {
       // Here I want to check which keys are pressed down after the latest Keydown event and accordingly switch rows in my sprite
       let spriteRow;
       spriteRow = checkMovementDirection();
-          switch(spriteRow) {
-            case "up":
-              setActiveRow(2);
-              break;
-            case "down":
-              setActiveRow(0);
-              break;
-            case "left":
-              setActiveRow(3);
-              break;
-            case "right":
-              setActiveRow(1);
-              break;
-            default:
-              break;
-          }
+      switch (spriteRow) {
+        case "up":
+          setActiveRow(2);
+          break;
+        case "down":
+          setActiveRow(0);
+          break;
+        case "left":
+          setActiveRow(3);
+          break;
+        case "right":
+          setActiveRow(1);
+          break;
+        default:
+          break;
+      }
     };
 
     const handleKeyUp = (event) => {
       switch (event.key) {
-        case "ArrowUp": 
+        case "ArrowUp":
           direction.current.y = 0;
           pressedKeys.current.up = false;
           break;
@@ -395,28 +380,28 @@ function MainScreen() {
       // Here I want to check which keys are pressed down after the latest KeyUp event and accordingly switch rows in my sprite
       let spriteRow;
       spriteRow = checkMovementDirection();
-          switch(spriteRow) {
-            case "up":
-              setActiveRow(2);
-              break;
-            case "down":
-              setActiveRow(0);
-              break;
-            case "left":
-              setActiveRow(3);
-              break;
-            case "right":
-              setActiveRow(1);
-              break;
-            default:
-              break;
-          }
+      switch (spriteRow) {
+        case "up":
+          setActiveRow(2);
+          break;
+        case "down":
+          setActiveRow(0);
+          break;
+        case "left":
+          setActiveRow(3);
+          break;
+        case "right":
+          setActiveRow(1);
+          break;
+        default:
+          break;
+      }
     };
     gameLoop();
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
     // event listener for window size is needed to change movement borders dynamically
-    window.addEventListener('resize', updateBoundaries);
+    window.addEventListener("resize", updateBoundaries);
 
     // getting DOM element after it has mounted
     backgroundElement.current = document.getElementById("game-container");

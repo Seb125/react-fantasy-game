@@ -5,6 +5,8 @@
   height: 1024px;
   background-repeat: no-repeat;
   background-position: 0px 0px;
+  z-index: 0;
+  
 }
 
 #root {
@@ -22,4 +24,8 @@
   width: 32px;
   height: 32px;
   background-image: url("./assets/Rickettz.png");
+}
+
+#rockOne {
+  background-image: url("./assets/rocks.png");
 }

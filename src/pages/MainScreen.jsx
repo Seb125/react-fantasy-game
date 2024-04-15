@@ -1,6 +1,9 @@
 import Player from "../components/Player";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+// Maps
+import GreenLand from "../maps/GreenLand";
+
 
 function MainScreen() {
   const direction = useRef({ x: 0, y: 0 }); // movement direction, useRef hook, to get current value inside my EventListener
@@ -43,7 +46,6 @@ function MainScreen() {
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
     setPosition((previousPosition) => {
-      console.log(previousPosition.y);
       if (backgroundElement != null) {
         const computedStyle = window.getComputedStyle(
           backgroundElement.current
@@ -91,7 +93,6 @@ function MainScreen() {
         ) {
           // bottom side
           isScreenMoving.current = true;
-          console.log("movingScreen");
           newX = currentXValue;
           newY = currentYValue - 10;
         } else {
@@ -429,15 +430,8 @@ function MainScreen() {
   };
 
   return (
-    <div
-      id="game-container"
-      style={{
-        backgroundPosition: backgroundPosition,
-        transition: "background-position 0.1s",
-      }}
-    >
-      <button onClick={endGame}>EndGame</button>
-      <Player position={position} frameX={frameX} frameY={frameY} />
+    <div>
+    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} />
     </div>
   );
 }

@@ -1,9 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import image from "../assets/Rickettz.png";
-// new feature
-// second new feature
-// change in main branch
-// gg3
+
 function Test() {
   const backgroundElement = useRef(null);
   const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");

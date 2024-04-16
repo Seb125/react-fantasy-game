@@ -1,13 +1,14 @@
-import Player from "../components/Player";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { updatePlayerPosition } from "../playerUtils";
 // Maps
 import GreenLand from "../maps/GreenLand";
 
 
+
 function MainScreen() {
   const direction = useRef({ x: 0, y: 0 }); // movement direction, useRef hook, to get current value inside my EventListener
-  const [position, setPosition] = useState({ x: 0, y: 0 }); // player position on game screen
+  const [position, setPosition] = useState({ x: 0, y: 200 }); // player position on game screen
   const [frameIndex, setFrameIndex] = useState(0); // frame of player sprite sheet
   const [activeRow, setActiveRow] = useState(0); // i have one row of 4 sprites for every direction on the sprite sheet
   const [counter, setCounter] = useState(0); // to reduce speed of looping through sprite images inside game loop, updating sprite image every 5 loops
@@ -33,6 +34,8 @@ function MainScreen() {
         ? 1792 - spriteSize
         : window.innerWidth - spriteSize,
   });
+  const [objectCenterPositions, setObjectCenterPositions] = useState([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
+  const [bgPosition, setBgPosition] = useState([0, 0]); // background position as numeric value (redundant mit background position oben)
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
@@ -41,201 +44,20 @@ function MainScreen() {
   const frameTime = 60 / 1000;
 
   const framesPerRow = 4; // Number of sprites in each row
+  const rock = {
+    x: 50,
+    y: 100
+  };
+  
+  const radius = 60;
+
   const navigate = useNavigate();
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
-    setPosition((previousPosition) => {
-      if (backgroundElement != null) {
-        const computedStyle = window.getComputedStyle(
-          backgroundElement.current
-        );
-
-        // Get the backgroundPosition property from the computed style
-        const bgp = computedStyle.getPropertyValue("background-position");
-        // calculate new background Position
-        const [currentX, currentY] = bgp.split(" ");
-        const currentXValue = parseInt(currentX, 10);
-        const currentYValue = parseInt(currentY, 10);
-
-        // if the window is bigger than the fixed gamescreen no scrolling is necesseary, otherwise only the amount of the difference
-        const maxXScroll = 1792 - window.innerWidth;
-        const maxYScroll = 1024 - window.innerHeight;
-
-        // Subtract 10 from current background position
-        // only chnage position under the condition that the Player is not at end of the background picture
-        let newX;
-        let newY;
-        // left side
-        if (!(currentXValue >= 0) && previousPosition.x <= 0 + spriteSize) {
-          isScreenMoving.current = true;
-          newX = currentXValue + 10;
-          newY = currentYValue;
-        } else if (
-          !(currentXValue <= -maxXScroll) &&
-          previousPosition.x >= window.innerWidth - 2 * spriteSize
-        ) {
-          // right side
-          isScreenMoving.current = true;
-          newX = currentXValue - 10;
-          newY = currentYValue;
-        } else if (
-          !(currentYValue >= 0) &&
-          previousPosition.y <= 0 + spriteSize
-        ) {
-          // top side
-          isScreenMoving.current = true;
-          newX = currentXValue;
-          newY = currentYValue + 10;
-        } else if (
-          !(currentYValue <= -maxYScroll) &&
-          previousPosition.y >= window.innerHeight - 2 * spriteSize
-        ) {
-          // bottom side
-          isScreenMoving.current = true;
-          newX = currentXValue;
-          newY = currentYValue - 10;
-        } else {
-          isScreenMoving.current = false;
-
-          newX = currentXValue;
-          newY = currentYValue;
-        }
-        setBackgroundPosition(`${newX}px ${newY}px`);
-      }
-      // player should not be able to walk past the map
-      let newPosition;
-      const bottomBorder = previousPosition.y >= borders.current.bottom;
-      const upperBorder = previousPosition.y <= 0;
-      const leftBorder = previousPosition.x <= 0;
-      const rightBorder = previousPosition.x >= borders.current.right;
-
-      if (!bottomBorder && !upperBorder && !leftBorder && !rightBorder) {
-        newPosition = {
-          x: previousPosition.x + direction.current.x,
-          y: previousPosition.y + direction.current.y,
-        };
-      } else if (bottomBorder && leftBorder) {
-        if (direction.current.x > 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y < 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
-          };
-        }
-      } else if (bottomBorder && rightBorder) {
-        if (direction.current.x < 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y < 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
-          };
-        }
-      } else if (leftBorder && upperBorder) {
-        if (direction.current.x > 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y > 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
-          };
-        }
-      } else if (upperBorder && rightBorder) {
-        if (direction.current.x < 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y > 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y,
-          };
-        }
-      } else if (bottomBorder) {
-        if (direction.current.y > 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y <= 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        }
-      } else if (upperBorder) {
-        if (direction.current.y < 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y,
-          };
-        } else if (direction.current.y >= 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        }
-      } else if (leftBorder) {
-        if (direction.current.x < 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else if (direction.current.x >= 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        }
-      } else if (rightBorder) {
-        if (direction.current.x > 0) {
-          newPosition = {
-            x: previousPosition.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        } else if (direction.current.x <= 0) {
-          newPosition = {
-            x: previousPosition.x + direction.current.x,
-            y: previousPosition.y + direction.current.y,
-          };
-        }
-      }
-
-      return newPosition;
-    });
-
+    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, objectCenterPositions);
+    
+    //console.log(collided);
     animateSprite();
   };
 
@@ -310,7 +132,21 @@ function MainScreen() {
     });
 
     animationID.current = window.requestAnimationFrame(gameLoop);
-  };
+  }; 
+  // update positions of objects when screen srolls
+  // useEffect(() => {
+  //   const [currentX, currentY] = backgroundPosition.split(" ");
+  //   const currentXValue = parseInt(currentX, 10);
+  //   const currentYValue = parseInt(currentY, 10);
+  
+  //   setBgPosition((previous) => {
+  //     // Here I need to update object center positions according to how much the screen moved
+
+  //     })
+
+  //     return [currentXValue, currentYValue]
+  
+  // }, [backgroundPosition]);
 
   // on the first loading of the DOM EventListeners are created, that watch arrow Keys for player movement
   useEffect(() => {

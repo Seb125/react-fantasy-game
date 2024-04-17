@@ -20,31 +20,9 @@
   background-image: url("./assets/Rickettz.png");
 }
 
-#rockOne {
-  background-image: url("./assets/rocks.png");
-  background-size: 350px 350px;
-  background-repeat: no-repeat;
-  width: 180px;
-  height: 180px;
-  z-index: 1;
-}
 
-#rockTwo {
-  background-image: url("./assets/rocks.png");
-  background-size: 350px 350px;
-  background-position: -0px -170px ;
-  background-repeat: no-repeat;
-  width: 180px;
-  height: 180px;
-  z-index: 1;
-}
-
-#rockThree {
-  background-image: url("./assets/rocks.png");
-  background-size: 250px 250px;
-  background-position: -130px -0px ;
-  background-repeat: no-repeat;
-  width: 130px;
-  height: 130px;
-  z-index: 1;
+#green-land-woman {
+  width: 32px;
+  height: 32px;
+  background-image: url("./assets/Woman.png");
 }

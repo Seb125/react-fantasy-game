@@ -1,7 +1,8 @@
-export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, objectCenterPositions) {
+
+
+export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions) {
     //logic for updating player position
     setPosition((previousPosition) => {
-        console.log(previousPosition)
         if (backgroundElement != null) {
           const computedStyle = window.getComputedStyle(
             backgroundElement.current
@@ -57,26 +58,31 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
             newX = currentXValue;
             newY = currentYValue;
           }
-          setBackgroundPosition(`${newX}px ${newY}px`);
+          setBackgroundPosition([newX, newY]);
         }
 
         let newPosition;
-        // also check for collision of Player with objects
-        for (const object of objectCenterPositions) {
+        //also check for collision of Player with objects
+        for (const object of greenLandObjectCenterPositions.current) {
             
             const distance = Math.sqrt(
                 Math.pow(previousPosition.x - object.left, 2) +
                 Math.pow(previousPosition.y - object.top, 2)
             );
             if(distance < object.radius) {
-    
+              console.log(object)
+              // !!!!!!!!!! better condition...
+              if(object.top === 600 && object.left === 900) {
+                console.log("Hi stranger!")
+                alert("Hi stranger!")
+              }
                 const updatedDistance = Math.sqrt(
                     Math.pow(previousPosition.x + direction.current.x - object.left, 2) +
                     Math.pow(previousPosition.y + direction.current.y - object.top, 2)
                 );    
                 // Check if distance is less than or equal to the sum of radii
                 if (updatedDistance < object.radius) {
-                    console.log("exit")
+                    
                     // player chould not move into object
                     newPosition = {
                         x: previousPosition.x,
@@ -87,6 +93,10 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
             }
         }
 
+        newPosition = {
+          x: previousPosition.x + direction.current.x,
+          y: previousPosition.y + direction.current.y,
+        };
         // player should not be able to walk past the map
         
         const bottomBorder = previousPosition.y >= borders.current.bottom;

@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { updatePlayerPosition } from "../playerUtils";
 // Maps
 import GreenLand from "../maps/GreenLand";
+import { LevelContext } from "../context/level.context";
 
 
 
@@ -15,7 +16,7 @@ function MainScreen() {
   const [gameOver, setGameOver] = useState(false);
   const animationID = useRef(null);
   const backgroundElement = useRef(null);
-  const [backgroundPosition, setBackgroundPosition] = useState("0px 0px");
+  const [backgroundPosition, setBackgroundPosition] = useState([0, 0]);
   const isScreenMoving = useRef(false); // Track if the screen is moving
   const pressedKeys = useRef({
     up: false,
@@ -34,8 +35,9 @@ function MainScreen() {
         ? 1792 - spriteSize
         : window.innerWidth - spriteSize,
   });
-  const [objectCenterPositions, setObjectCenterPositions] = useState([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
-  const [bgPosition, setBgPosition] = useState([0, 0]); // background position as numeric value (redundant mit background position oben)
+  const { greenLandObjectCenterPositions } = useContext(LevelContext);
+  // const initialObjectPositions = [{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]; // object positions need to updated with reference to original positions
+  // const objectCenterPositions = useRef([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
@@ -44,18 +46,12 @@ function MainScreen() {
   const frameTime = 60 / 1000;
 
   const framesPerRow = 4; // Number of sprites in each row
-  const rock = {
-    x: 50,
-    y: 100
-  };
-  
-  const radius = 60;
-
+ 
   const navigate = useNavigate();
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
-    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, objectCenterPositions);
+    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions);
     
     //console.log(collided);
     animateSprite();
@@ -133,20 +129,6 @@ function MainScreen() {
 
     animationID.current = window.requestAnimationFrame(gameLoop);
   }; 
-  // update positions of objects when screen srolls
-  // useEffect(() => {
-  //   const [currentX, currentY] = backgroundPosition.split(" ");
-  //   const currentXValue = parseInt(currentX, 10);
-  //   const currentYValue = parseInt(currentY, 10);
-  
-  //   setBgPosition((previous) => {
-  //     // Here I need to update object center positions according to how much the screen moved
-
-  //     })
-
-  //     return [currentXValue, currentYValue]
-  
-  // }, [backgroundPosition]);
 
   // on the first loading of the DOM EventListeners are created, that watch arrow Keys for player movement
   useEffect(() => {
@@ -265,8 +247,13 @@ function MainScreen() {
     navigate("/game-over");
   };
 
+  const doSomething = () => {
+    console.log(objectCenterPositions);
+  }
+
   return (
     <div>
+    {/* <button onClick={doSomething}>Log Something</button> */}
     <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} />
     </div>
   );

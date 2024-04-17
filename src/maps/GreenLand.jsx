@@ -1,29 +1,45 @@
 import Player from "../components/Player";
-import { useState, useEffect, useRef } from "react";
-
+import { useState, useEffect, useRef, useContext } from "react";
+import { LevelContext } from "../context/level.context";
 
 function GreenLand({ backgroundPosition, position, frameX, frameY }) {
-const [rockCenterPositions, setRockCenterPositions] = useState({one: {top: 100, left: 50, radius: 60}}) // center (top left) of all rocks are saved and updated here
-const [bgPosition, setBgPosition] = useState([0, 0]) // need to track background position as numeric values to adjust positions of all objects on the map
+  
+  const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } = useContext(LevelContext);
 
-useEffect(() => {
-  const [currentX, currentY] = backgroundPosition.split(" ");
-  const currentXValue = parseInt(currentX, 10);
-  const currentYValue = parseInt(currentY, 10);
+  // update positions of objects when screen srolls
+  useEffect(() => {
+    let updatedPositions = [];
+    for(let i = 0; i < greenLandInitialObjectPositions.length; i++) {
+      updatedPositions.push({
+        top: greenLandInitialObjectPositions[i].top + backgroundPosition[1],
+        left: greenLandInitialObjectPositions[i].left + backgroundPosition[0],
+        radius: greenLandInitialObjectPositions[i].radius
+      })
 
-  setBgPosition([currentXValue, currentYValue]);
-  console.log(rockCenterPositions.one.top)
-}, [backgroundPosition])
+    }
+
+    greenLandObjectCenterPositions.current = updatedPositions;
+
+      
+  
+  }, [backgroundPosition]);
   return (
     <div
       id="game-container"
       style={{
-        backgroundPosition: backgroundPosition,
+        backgroundPosition: `${backgroundPosition[0]}px ${backgroundPosition[1]}px`,
         transition: "background-position 0.1s",
       }}
     >
       
       <Player position={position} frameX={frameX} frameY={frameY} />
+      <div id="green-land-woman" style={{
+          position: "absolute",
+          top: 600,
+          left: 900,
+          backgroundPosition: `-${0}px -${0}px`
+        }}>
+      </div>
     </div>
   );
 }

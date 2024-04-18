@@ -26,3 +26,11 @@
   height: 32px;
   background-image: url("./assets/Woman.png");
 }
+
+#start-screen {
+  background-image: url("./assets/start-screen.png");
+  background-size: cover;
+  height: 100vh;
+  background-position: 0px -20px;
+  
+}

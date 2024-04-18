@@ -35,7 +35,7 @@ function MainScreen() {
         ? 1792 - spriteSize
         : window.innerWidth - spriteSize,
   });
-  const { greenLandObjectCenterPositions } = useContext(LevelContext);
+  const { greenLandObjectCenterPositions, setTextBox } = useContext(LevelContext);
   // const initialObjectPositions = [{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]; // object positions need to updated with reference to original positions
   // const objectCenterPositions = useRef([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
   // Loop Variables
@@ -51,7 +51,7 @@ function MainScreen() {
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
-    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions);
+    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setTextBox);
     
     //console.log(collided);
     animateSprite();

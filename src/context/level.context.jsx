@@ -4,6 +4,9 @@ import React, { useState, useEffect, useRef } from "react";
 const LevelContext = React.createContext();
 
 function LevelProviderWrapper(props) {
+
+  const [textBox, setTextBox] = useState(false);
+
   const greenLandInitialObjectPositions = [
     { top: 100, left: 50, radius: 60 },
     { top: 400, left: 70, radius: 90 },
@@ -27,7 +30,7 @@ function LevelProviderWrapper(props) {
     { top: 440, left: 1250, radius: 40 },
     { top: 850, left: 1480, radius: 60 },
     // Greenland Woman character  
-    { top: 600, left: 900, radius: 25 }
+    { top: 600, left: 900, radius: 25, human: true }
 
     
   ]; // object positions need to updated with reference to original positions
@@ -52,7 +55,7 @@ function LevelProviderWrapper(props) {
     { top: 440, left: 1250, radius: 40 },
     { top: 850, left: 1480, radius: 60 },
     // Greenland Woman character  
-    { top: 600, left: 900, radius: 25 }
+    { top: 600, left: 900, radius: 25, human: true }
 
   ]); // for collision detection
 
@@ -60,7 +63,9 @@ function LevelProviderWrapper(props) {
     <LevelContext.Provider
       value={{
         greenLandInitialObjectPositions,
-        greenLandObjectCenterPositions
+        greenLandObjectCenterPositions,
+        textBox,
+        setTextBox
       }}
     >
       {props.children}

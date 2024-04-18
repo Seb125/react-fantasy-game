@@ -1,6 +1,6 @@
 
 
-export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions) {
+export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setTextBox) {
     //logic for updating player position
     setPosition((previousPosition) => {
         if (backgroundElement != null) {
@@ -71,10 +71,9 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
             );
             if(distance < object.radius) {
               console.log(object)
-              // !!!!!!!!!! better condition...
-              if(object.top === 600 && object.left === 900) {
-                console.log("Hi stranger!")
-                alert("Hi stranger!")
+              
+              if(object.human) {
+                setTextBox(true);
               }
                 const updatedDistance = Math.sqrt(
                     Math.pow(previousPosition.x + direction.current.x - object.left, 2) +

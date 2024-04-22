@@ -1,6 +1,6 @@
 
 
-export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setTextBox) {
+export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv) {
     //logic for updating player position
     setPosition((previousPosition) => {
         if (backgroundElement != null) {
@@ -70,10 +70,10 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
                 Math.pow(previousPosition.y - object.top, 2)
             );
             if(distance < object.radius) {
-              console.log(object)
+              
               
               if(object.human) {
-                setTextBox(true);
+                setConv(true);
               }
                 const updatedDistance = Math.sqrt(
                     Math.pow(previousPosition.x + direction.current.x - object.left, 2) +

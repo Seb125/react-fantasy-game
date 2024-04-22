@@ -35,13 +35,16 @@ function MainScreen() {
         ? 1792 - spriteSize
         : window.innerWidth - spriteSize,
   });
-  const { greenLandObjectCenterPositions, setTextBox } = useContext(LevelContext);
+  const { greenLandObjectCenterPositions, textBox } = useContext(LevelContext);
   // const initialObjectPositions = [{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]; // object positions need to updated with reference to original positions
   // const objectCenterPositions = useRef([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
   // Loop Variables
   const [lastTimestamp, setLastTimestamp] = useState(null);
   const [accumulatedTime, setAccumulatedTime] = useState(0);
   const [elapsed, setElapsed] = useState(0);
+
+  // check if there is a conversation with a NPC
+  const [conv, setConv] = useState(false);
 
   const frameTime = 60 / 1000;
 
@@ -51,7 +54,7 @@ function MainScreen() {
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
-    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setTextBox);
+    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv);
     
     //console.log(collided);
     animateSprite();
@@ -254,7 +257,7 @@ function MainScreen() {
   return (
     <div>
     {/* <button onClick={doSomething}>Log Something</button> */}
-    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} />
+    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} conversation={conv}/>
     </div>
   );
 }

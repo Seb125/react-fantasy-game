@@ -21,7 +21,9 @@ const Login = () => {
             .then((response) => {
                 setError("");
                 storeToken(response.data.authToken);
-                authenticateUser();
+                authenticateUser();                
+            })
+            .then((response) => {
                 navigate("/");
             })
             .catch((error) => {

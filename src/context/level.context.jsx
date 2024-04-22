@@ -1,11 +1,9 @@
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 
 const LevelContext = React.createContext();
 
 function LevelProviderWrapper(props) {
-
-  const [textBox, setTextBox] = useState(false);
 
   const greenLandInitialObjectPositions = [
     { top: 100, left: 50, radius: 60 },
@@ -64,8 +62,7 @@ function LevelProviderWrapper(props) {
       value={{
         greenLandInitialObjectPositions,
         greenLandObjectCenterPositions,
-        textBox,
-        setTextBox
+       
       }}
     >
       {props.children}

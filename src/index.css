@@ -28,7 +28,7 @@
 }
 
 #start-screen {
-  background-image: url("./assets/start-screen.png");
+  background-image: url("./assets/start-screen.webp");
   background-size: cover;
   height: 100vh;
   background-position: 0px -20px;

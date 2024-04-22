@@ -21,9 +21,11 @@ const Login = () => {
             .then((response) => {
                 setError("");
                 storeToken(response.data.authToken);
-                authenticateUser();                
+                authenticateUser();    
+                return null;            
             })
             .then((response) => {
+                console.log("gg")
                 navigate("/");
             })
             .catch((error) => {

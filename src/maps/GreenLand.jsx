@@ -11,21 +11,18 @@ function GreenLand({
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
-  const [playerInput, setPlayerInput] = useState("");
+  
   // conversation variables
   let index = 0;
   const speed = 100; // Adjust typing speed here
-  const npcElemment = document.getElementById("typing-text"); // DOM Element for displaying what the NPC is saying
-  const playerElement = document.getElementById("player-text");
-  let npxText;
+  const npcElemment = document.getElementById("greenland-npc"); // DOM Element for displaying what the NPC is saying
+  let npxText = "Hello Stranger. I saw you coming this way."
 
   function typeWriter() {
     if (index < npxText.length) {
       npcElemment.innerHTML += npxText.charAt(index);
       index++;
       setTimeout(typeWriter, speed);
-    } else{
-      return "done";
     }
   }
   
@@ -33,22 +30,7 @@ function GreenLand({
 
   const startConversation = async () => {
     try {
-      const response = await fetch("http://localhost:5005/conversation", {
-        method: "GET",
-      });
-      const parsedText = await response.json();
-      npxText = parsedText.message;
-      npcElemment.style.backgroundColor = "rgb(150, 150, 150)";
-      npcElemment.style.padding = "10px";
-      npcElemment.style.borderRadius = "20px";
-      playerElement.style.display = "block";
       typeWriter();
-      const npcDone = await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("done");
-        }, speed*npxText.length);
-      });
-      console.log(npcDone)
     } catch (error) {
       console.log(error);
     }
@@ -56,6 +38,7 @@ function GreenLand({
 
   useEffect(() => {
     if (conversation === true) {
+      npcElemment.style.display = "block";
       startConversation();
     }
   }, [conversation]);
@@ -90,11 +73,8 @@ function GreenLand({
           backgroundPosition: `-${0}px -${0}px`,
         }}
       ></div>
-      <div style={{ position: "absolute", top: 500, left: 900 }}>
-        <p id="typing-text"></p>
-      </div>
-      <div style={{ position: "absolute", top: position.y - 50, left: position.x, borderRadius: "20px", padding:"10px" }}>
-        <input id="player-text" type="text" style={{display:"none"}} value={playerInput} onChange={(e) => setPlayerInput(e.target.value)}></input>
+      <div>
+        <p id="greenland-npc" style={{ position: "absolute", padding: "5px", top: 500, left: 900, border:"solid rgb(64, 38, 21) ", borderStyle:"double", width: "200px", display:"none", color:"white", textShadow: "2px 2px blue" }}></p>
       </div>
     </div>
   );

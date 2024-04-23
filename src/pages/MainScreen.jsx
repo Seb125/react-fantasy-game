@@ -9,6 +9,7 @@ import { LevelContext } from "../context/level.context";
 
 function MainScreen() {
   const direction = useRef({ x: 0, y: 0 }); // movement direction, useRef hook, to get current value inside my EventListener
+  const [npcPosition, setNpcPosition] = useState({ x: 900, y: 600 });
   const [position, setPosition] = useState({ x: 0, y: 200 }); // player position on game screen
   const [frameIndex, setFrameIndex] = useState(0); // frame of player sprite sheet
   const [activeRow, setActiveRow] = useState(0); // i have one row of 4 sprites for every direction on the sprite sheet
@@ -54,7 +55,7 @@ function MainScreen() {
 
   // every iteration of game loop update function updates everything on screen (positions etc), looping through sprites
   const update = () => {
-    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv);
+    updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv, setNpcPosition);
     
     //console.log(collided);
     animateSprite();
@@ -257,7 +258,7 @@ function MainScreen() {
   return (
     <div>
     {/* <button onClick={doSomething}>Log Something</button> */}
-    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv}/>
+    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv} npcPosition={npcPosition}/>
     </div>
   );
 }

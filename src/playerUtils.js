@@ -1,6 +1,6 @@
 
 
-export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv) {
+export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv, setNpcPosition) {
     //logic for updating player position
     setPosition((previousPosition) => {
         if (backgroundElement != null) {
@@ -59,7 +59,12 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
             newY = currentYValue;
           }
           setBackgroundPosition([newX, newY]);
+          setNpcPosition({
+              x: 900 + newX,
+              y: 600 + newY
+            })
         }
+      
 
         let newPosition;
         //also check for collision of Player with objects

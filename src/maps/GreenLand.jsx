@@ -8,7 +8,8 @@ function GreenLand({
   frameX,
   frameY,
   conversation,
-  setConverstaion
+  setConverstaion,
+  npcPosition
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
@@ -16,14 +17,15 @@ function GreenLand({
   // conversation variables
   let index = 0;
   const speed = 100; // Adjust typing speed here
-  const npcElemment = document.getElementById("greenland-npc"); // DOM Element for displaying what the NPC is saying
+  const npcTextBox = document.getElementById("greenland-npc"); // DOM Element for displaying what the NPC is saying
+  const npcElement = document.getElementById("green-land-woman");
   let currentText;
   const npxText = {firstSentence:"Hello Stranger. I saw you coming this way.",
 secondSentence: "I am looking for moonflowers for my village. Can you help me gather 5 more?"}
 
   function typeWriter() {
     if (index < currentText.length) {
-      npcElemment.innerHTML += currentText.charAt(index);
+      npcTextBox.innerHTML += currentText.charAt(index);
       index++;
       setTimeout(typeWriter, speed);
     }
@@ -40,7 +42,7 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
           resolve("done");
         }, speed*currentText.length + 2000);
       });
-      npcElemment.innerHTML = "";
+      npcTextBox.innerHTML = "";
       currentText = npxText.secondSentence;
       index = 0;
       typeWriter();
@@ -49,8 +51,8 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
           resolve("done");
         }, speed*currentText.length + 2000);
       });
-      npcElemment.innerHTML = "";
-      npcElemment.style.display = "none";
+      npcTextBox.innerHTML = "";
+      npcTextBox.style.display = "none";
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve("done");
@@ -64,7 +66,7 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
 
   useEffect(() => {
     if (conversation === true) {
-      npcElemment.style.display = "block";
+      npcTextBox.style.display = "block";
       startConversation();
     }
   }, [conversation]);
@@ -80,6 +82,18 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
     }
 
     greenLandObjectCenterPositions.current = updatedPositions;
+
+    //also NPC characters Position needs to be updated
+    if (npcElement) {
+      // Calculate the updated NPC position
+      const npcTop = backgroundPosition[1] + 600;
+      const npcLeft = backgroundPosition[0] + 900;
+  
+      // Apply updated position using CSS transitions
+      npcElement.style.transition = "top 0.1s, left 0.1s"; // same transition duration as for the game container/ background image
+      npcElement.style.top = `${npcTop}px`;
+      npcElement.style.left = `${npcLeft}px`;
+    }
   }, [backgroundPosition]);
   return (
     <div
@@ -100,7 +114,7 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
         }}
       ></div>
       <div>
-        <p id="greenland-npc" style={{ position: "absolute", padding: "5px", top: 500, left: 900, border:"solid rgb(64, 38, 21) ", borderStyle:"double", width: "200px", display:"none", color:"white", textShadow: "2px 2px blue" }}></p>
+        <p id="greenland-npc" style={{ position: "absolute", padding: "5px", top: 600, left: 900, border:"solid rgb(64, 38, 21) ", borderStyle:"double", width: "200px", display:"none", color:"white", textShadow: "2px 2px blue" }}></p>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ function GreenLand({
   frameX,
   frameY,
   conversation,
+  setConverstaion
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
@@ -16,11 +17,13 @@ function GreenLand({
   let index = 0;
   const speed = 100; // Adjust typing speed here
   const npcElemment = document.getElementById("greenland-npc"); // DOM Element for displaying what the NPC is saying
-  let npxText = "Hello Stranger. I saw you coming this way."
+  let currentText;
+  const npxText = {firstSentence:"Hello Stranger. I saw you coming this way.",
+secondSentence: "I am looking for moonflowers for my village. Can you help me gather 5 more?"}
 
   function typeWriter() {
-    if (index < npxText.length) {
-      npcElemment.innerHTML += npxText.charAt(index);
+    if (index < currentText.length) {
+      npcElemment.innerHTML += currentText.charAt(index);
       index++;
       setTimeout(typeWriter, speed);
     }
@@ -30,7 +33,30 @@ function GreenLand({
 
   const startConversation = async () => {
     try {
+      currentText = npxText.firstSentence;
       typeWriter();
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("done");
+        }, speed*currentText.length + 2000);
+      });
+      npcElemment.innerHTML = "";
+      currentText = npxText.secondSentence;
+      index = 0;
+      typeWriter();
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("done");
+        }, speed*currentText.length + 2000);
+      });
+      npcElemment.innerHTML = "";
+      npcElemment.style.display = "none";
+      await new Promise((resolve) => {
+        setTimeout(() => {
+          resolve("done");
+        }, speed*currentText.length + 6000);
+      });
+      setConverstaion(false);
     } catch (error) {
       console.log(error);
     }

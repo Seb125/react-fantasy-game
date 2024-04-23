@@ -257,7 +257,7 @@ function MainScreen() {
   return (
     <div>
     {/* <button onClick={doSomething}>Log Something</button> */}
-    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} conversation={conv}/>
+    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv}/>
     </div>
   );
 }

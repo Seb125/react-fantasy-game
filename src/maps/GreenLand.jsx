@@ -9,19 +9,23 @@ function GreenLand({
   frameY,
   conversation,
   setConverstaion,
-  npcPosition
+  npcPosition,
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
-  
+
   // conversation variables
   let index = 0;
   const speed = 100; // Adjust typing speed here
   const npcTextBox = document.getElementById("greenland-npc"); // DOM Element for displaying what the NPC is saying
   const npcElement = document.getElementById("green-land-woman");
+  const flowerElements = document.querySelectorAll(".moonflower");
   let currentText;
-  const npxText = {firstSentence:"Hello Stranger. I saw you coming this way.",
-secondSentence: "I am looking for moonflowers for my village. Can you help me gather 5 more?"}
+  const npxText = {
+    firstSentence: "Hello Stranger. I saw you coming this way.",
+    secondSentence:
+      "I am looking for moonflowers for my village. Can you help me gather 5 more?",
+  };
 
   function typeWriter() {
     if (index < currentText.length) {
@@ -30,8 +34,6 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
       setTimeout(typeWriter, speed);
     }
   }
-  
-
 
   const startConversation = async () => {
     try {
@@ -40,7 +42,7 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve("done");
-        }, speed*currentText.length + 2000);
+        }, speed * currentText.length + 2000);
       });
       npcTextBox.innerHTML = "";
       currentText = npxText.secondSentence;
@@ -49,14 +51,14 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve("done");
-        }, speed*currentText.length + 2000);
+        }, speed * currentText.length + 2000);
       });
       npcTextBox.innerHTML = "";
       npcTextBox.style.display = "none";
       await new Promise((resolve) => {
         setTimeout(() => {
           resolve("done");
-        }, speed*currentText.length + 6000);
+        }, speed * currentText.length + 6000);
       });
       setConverstaion(false);
     } catch (error) {
@@ -83,16 +85,41 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
 
     greenLandObjectCenterPositions.current = updatedPositions;
 
-    //also NPC characters Position needs to be updated
-    if (npcElement) {
+    //also NPC characters Position and Textbox and moonflowers need to be updated on the screen
+    if (npcElement && npcTextBox && flowerElements) {
       // Calculate the updated NPC position
       const npcTop = backgroundPosition[1] + 600;
       const npcLeft = backgroundPosition[0] + 900;
-  
+      // textbox
+      const npcTopText = backgroundPosition[1] + 500;
+      const npcLeftText = backgroundPosition[0] + 900;
+
       // Apply updated position using CSS transitions
       npcElement.style.transition = "top 0.1s, left 0.1s"; // same transition duration as for the game container/ background image
       npcElement.style.top = `${npcTop}px`;
       npcElement.style.left = `${npcLeft}px`;
+
+      npcTextBox.style.transition = "top 0.1s, left 0.1s"; // same transition duration as for the game container/ background image
+      npcTextBox.style.top = `${npcTopText}px`;
+      npcTextBox.style.left = `${npcLeftText}px`;
+
+      // Updating moonflower positions on screen
+      const initialPosition = [
+        { top: 80, left: 150, radius: 35, flower: true },
+        { top: 20, left: 850, radius: 35, flower: true },
+        { top: 420, left: 850, radius: 35, flower: true },
+        { top: 720, left: 150, radius: 35, flower: true },
+        { top: 820, left: 1650, radius: 35, flower: true },
+      ];
+      let index = 0;
+      flowerElements.forEach((element) => {
+        element.style.transition = "top 0.1s, left 0.1s";
+        let newTop = backgroundPosition[1] + initialPosition[index].top;
+        let newLeft = backgroundPosition[0] + initialPosition[index].left;
+        element.style.top = `${newTop}px`;
+        element.style.left = `${newLeft}px`;
+        index++;
+      });
     }
   }, [backgroundPosition]);
   return (
@@ -114,8 +141,42 @@ secondSentence: "I am looking for moonflowers for my village. Can you help me ga
         }}
       ></div>
       <div>
-        <p id="greenland-npc" style={{ position: "absolute", padding: "5px", top: 600, left: 900, border:"solid rgb(64, 38, 21) ", borderStyle:"double", width: "200px", display:"none", color:"white", textShadow: "2px 2px blue" }}></p>
+        <p
+          id="greenland-npc"
+          style={{
+            position: "absolute",
+            padding: "5px",
+            top: 500,
+            left: 900,
+            border: "solid rgb(64, 38, 21) ",
+            borderStyle: "double",
+            width: "200px",
+            display: "none",
+            color: "white",
+            textShadow: "2px 2px blue",
+          }}
+        ></p>
       </div>
+      <div
+        className="moonflower"
+        style={{ position: "absolute", top: 80, left: 150 }}
+      ></div>
+      <div
+        className="moonflower"
+        style={{ position: "absolute", top: 20, left: 850 }}
+      ></div>
+      <div
+        className="moonflower"
+        style={{ position: "absolute", top: 420, left: 850 }}
+      ></div>
+      <div
+        className="moonflower"
+        style={{ position: "absolute", top: 720, left: 150 }}
+      ></div>
+      <div
+        className="moonflower"
+        style={{ position: "absolute", top: 820, left: 1650 }}
+      ></div>
     </div>
   );
 }

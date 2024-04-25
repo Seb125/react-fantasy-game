@@ -1,10 +1,8 @@
-
 import React, { useEffect, useRef } from "react";
 
 const LevelContext = React.createContext();
 
 function LevelProviderWrapper(props) {
-
   const greenLandInitialObjectPositions = [
     { top: 100, left: 50, radius: 60 },
     { top: 400, left: 70, radius: 90 },
@@ -27,10 +25,14 @@ function LevelProviderWrapper(props) {
     { top: 870, left: 1080, radius: 40 },
     { top: 440, left: 1250, radius: 40 },
     { top: 850, left: 1480, radius: 60 },
-    // Greenland Woman character  
-    { top: 600, left: 900, radius: 25, human: true }
-
-    
+    // Greenland Woman character
+    { top: 600, left: 900, radius: 25, human: true },
+    //Moonflowers
+    { top: 90, left: 150, radius: 35, flower: true },
+    { top: 30, left: 850, radius: 35, flower: true },
+    { top: 430, left: 850, radius: 35, flower: true },
+    { top: 730, left: 150, radius: 35, flower: true },
+    { top: 830, left: 1650, radius: 35, flower: true },
   ]; // object positions need to updated with reference to original positions
   const greenLandObjectCenterPositions = useRef([
     { top: 100, left: 50, radius: 60 },
@@ -52,9 +54,14 @@ function LevelProviderWrapper(props) {
     { top: 870, left: 1080, radius: 40 },
     { top: 440, left: 1250, radius: 40 },
     { top: 850, left: 1480, radius: 60 },
-    // Greenland Woman character  
-    { top: 600, left: 900, radius: 25, human: true }
-
+    // Greenland Woman character
+    { top: 600, left: 900, radius: 25, human: true },
+    //Moonflowers
+    { top: 90, left: 150, radius: 35, flower: true },
+    { top: 30, left: 850, radius: 35, flower: true },
+    { top: 430, left: 850, radius: 35, flower: true },
+    { top: 730, left: 150, radius: 35, flower: true },
+    { top: 830, left: 1650, radius: 35, flower: true },
   ]); // for collision detection
 
   return (
@@ -62,7 +69,6 @@ function LevelProviderWrapper(props) {
       value={{
         greenLandInitialObjectPositions,
         greenLandObjectCenterPositions,
-       
       }}
     >
       {props.children}

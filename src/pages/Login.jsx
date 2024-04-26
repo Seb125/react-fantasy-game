@@ -37,15 +37,17 @@ const Login = () => {
 
 
     return (
-        <div>
-            <form onSubmit={handleLogin}>
+        <div style={{height: "100vh"}}>
+        <div className="form-container">
+            <form onSubmit={handleLogin} className="form">
                 <label htmlFor="email">Email</label>
-                <input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)}></input>
+                <input type="text" name="email" value={email} placeholder="sebastian.schwarz@gito-verlag.de" onChange={(e) => setEmail(e.target.value)} className="form-element"></input>
                 <label htmlFor="pwd">Password</label>
-                <input type="password" name="pwd" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-                <button type="submit">Login</button>
-            </form>
+                <input type="password" name="pwd" value={password} placeholder="123456Aa" onChange={(e) => setPassword(e.target.value)} className="form-element"></input>
+                <button type="submit" className="form-element">Login</button>
             <p>Not registered yet? <Link to="/register">Register here</Link></p>
+            </form>
+            </div>
         </div>
                      
     );

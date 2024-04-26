@@ -42,13 +42,15 @@ const Register = () => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleRegister}>
+    <div style={{height: "100vh"}}>
+    <div className="form-container">
+      <form onSubmit={handleRegister} className="form">
         <label htmlFor="name">Name</label>
         <input
           type="text"
           name="name"
           value={name}
+          className="form-element"
           onChange={(e) => setName(e.target.value)}
         ></input>
         <label htmlFor="email">Email</label>
@@ -56,6 +58,7 @@ const Register = () => {
           type="text"
           name="email"
           value={email}
+          className="form-element"
           onChange={(e) => setEmail(e.target.value)}
         ></input>
         <label htmlFor="pwd">Password</label>
@@ -63,10 +66,12 @@ const Register = () => {
           type="password"
           name="pwd"
           value={password}
+          className="form-element"
           onChange={(e) => setPassword(e.target.value)}
         ></input>
-        <button type="submit">Register</button>
+        <button type="submit" className="form-element">Register</button>
       </form>
+    </div>
     </div>
   );
 };

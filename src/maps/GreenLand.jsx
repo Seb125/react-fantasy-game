@@ -1,6 +1,7 @@
 import Player from "../components/Player";
 import { useState, useEffect, useRef, useContext } from "react";
 import { LevelContext } from "../context/level.context";
+import myAudioFile from "../assets/greenland-music.mp3"
 
 function GreenLand({
   backgroundPosition,
@@ -13,6 +14,7 @@ function GreenLand({
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
+    const [isPlaying, setIsPlaying] = useState(true);
 
   // conversation variables
   let index = 0;
@@ -177,6 +179,10 @@ function GreenLand({
         className="moonflower"
         style={{ position: "absolute", top: 820, left: 1650 }}
       ></div>
+      <audio>
+                <source src={myAudioFile} type="audio/mpeg" />
+                Your browser does not support the audio element.
+            </audio>
     </div>
   );
 }

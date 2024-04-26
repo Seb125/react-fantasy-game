@@ -8,16 +8,7 @@ function StartScreen() {
   };
   return (
     <div id="start-screen">
-      <div
-        onClick={startGame}
-        style={{
-          position: "absolute",
-          height: "100vh",
-          width: "100vw",
-          
-        }}
-      ></div>
-      <Link to="/game"></Link>
+      <button className="button" onClick={startGame}>Start Game</button>
     </div>
   );
 }

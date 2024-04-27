@@ -140,19 +140,19 @@ function MainScreen() {
       event.preventDefault();
       switch (event.key) {
         case "ArrowUp":
-          direction.current.y = -2;
+          direction.current.y = -3;
           pressedKeys.current.up = true;
           break;
         case "ArrowDown":
-          direction.current.y = 2;
+          direction.current.y = 3;
           pressedKeys.current.down = true;
           break;
         case "ArrowLeft":
-          direction.current.x = -2;
+          direction.current.x = -3;
           pressedKeys.current.left = true;
           break;
         case "ArrowRight":
-          direction.current.x = 2;
+          direction.current.x = 3;
           pressedKeys.current.right = true;
           break;
         default:

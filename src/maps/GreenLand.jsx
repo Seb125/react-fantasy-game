@@ -14,7 +14,19 @@ function GreenLand({
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
-    const [isPlaying, setIsPlaying] = useState(true);
+    
+    // Add a reference to the audio element
+  const audioRef = useRef(null);
+
+  // Add useEffect to play audio when component mounts
+  useEffect(() => {
+    // Play the audio
+    if (audioRef.current) {
+      audioRef.current.play().catch(error => {
+        console.error("Failed to play audio:", error);
+      });
+    }
+  }, []);
 
   // conversation variables
   let index = 0;
@@ -179,8 +191,8 @@ function GreenLand({
         className="moonflower"
         style={{ position: "absolute", top: 820, left: 1650 }}
       ></div>
-      <audio>
-                <source src={myAudioFile} type="audio/mpeg" />
+      <audio autoPlay ref={audioRef}>
+                <source src={myAudioFile} type="audio/mpeg"/>
                 Your browser does not support the audio element.
             </audio>
     </div>

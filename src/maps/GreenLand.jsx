@@ -38,7 +38,7 @@ function GreenLand({
   const npxText = {
     firstSentence: "Hello Stranger. I saw you coming this way.",
     secondSentence:
-      "I am looking for moonflowers for my village. Can you help me gather 5 more?",
+      "I am looking for moonflowers for my village. Can you help me gather 5 more? Use (E) to collect a flower",
   };
 
   // Function to check for collision between two elements

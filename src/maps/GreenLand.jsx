@@ -95,7 +95,7 @@ function GreenLand({
             currentFlower.style.display = "none";
             // increase number of collected moonflowers
             //!!!!!!!!!!!!!! for some reason this gets executed twice, thats why I am increasing ocunt by 0.5, need to fix
-            flowersCollected.current = flowersCollected.current+0.5;
+            flowersCollected.current = flowersCollected.current+1;
             // get flower id to rmeove the same object from the level context 
             const flowerId = currentFlower.id;
             // also the objects need to be removed form the levelContext

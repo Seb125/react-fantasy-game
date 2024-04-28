@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from "react";
 const LevelContext = React.createContext();
 
 function LevelProviderWrapper(props) {
-  const greenLandInitialObjectPositions = [
+  const greenLandInitialObjectPositions = useRef([
     { top: 100, left: 50, radius: 60 },
     { top: 400, left: 70, radius: 90 },
     { top: 580, left: 40, radius: 40 },
@@ -28,12 +28,12 @@ function LevelProviderWrapper(props) {
     // Greenland Woman character
     { top: 600, left: 900, radius: 25, human: true },
     //Moonflowers
-    { top: 90, left: 150, radius: 35, flower: true },
-    { top: 30, left: 850, radius: 35, flower: true },
-    { top: 430, left: 850, radius: 35, flower: true },
-    { top: 730, left: 150, radius: 35, flower: true },
-    { top: 830, left: 1650, radius: 35, flower: true },
-  ]; // object positions need to updated with reference to original positions
+    { top: 90, left: 150, radius: 35, flower: "moonflowerOne" },
+    { top: 30, left: 850, radius: 35, flower: "moonflowerTwo" },
+    { top: 430, left: 850, radius: 35, flower: "moonflowerThree" },
+    { top: 730, left: 150, radius: 35, flower: "moonflowerFour" },
+    { top: 830, left: 1650, radius: 35, flower: "moonflowerFive" },
+  ]); // object positions need to updated with reference to original positions
   const greenLandObjectCenterPositions = useRef([
     { top: 100, left: 50, radius: 60 },
     { top: 400, left: 70, radius: 90 },
@@ -57,11 +57,11 @@ function LevelProviderWrapper(props) {
     // Greenland Woman character
     { top: 600, left: 900, radius: 25, human: true },
     //Moonflowers
-    { top: 90, left: 150, radius: 35, flower: true },
-    { top: 30, left: 850, radius: 35, flower: true },
-    { top: 430, left: 850, radius: 35, flower: true },
-    { top: 730, left: 150, radius: 35, flower: true },
-    { top: 830, left: 1650, radius: 35, flower: true },
+    { top: 90, left: 150, radius: 35, flower: "moonflowerOne" },
+    { top: 30, left: 850, radius: 35, flower: "moonflowerTwo" },
+    { top: 430, left: 850, radius: 35, flower: "moonflowerThree" },
+    { top: 730, left: 150, radius: 35, flower: "moonflowerFour" },
+    { top: 830, left: 1650, radius: 35, flower: "moonflowerFive" },
   ]); // for collision detection
 
   return (

@@ -1,32 +1,32 @@
 import Player from "../components/Player";
 import { useState, useEffect, useRef, useContext } from "react";
 import { LevelContext } from "../context/level.context";
-import myAudioFile from "../assets/greenland-music.mp3"
+import myAudioFile from "../assets/greenland-music.mp3";
 
 function GreenLand({
   backgroundPosition,
   position,
+  setPosition,
   frameX,
   frameY,
   conversation,
   setConverstaion,
   npcPosition,
+  endGame
 }) {
   const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
     useContext(LevelContext);
-    
-    // Add a reference to the audio element
+
+  // Keeping track of collected moonflowers
+  const flowersCollected = useRef(0);
+  // Add a reference to the audio element
   const audioRef = useRef(null);
 
-  // Add useEffect to play audio when component mounts
-  useEffect(() => {
-    // Play the audio
-    if (audioRef.current) {
-      audioRef.current.play().catch(error => {
-        console.error("Failed to play audio:", error);
-      });
-    }
-  }, []);
+  const moonflowerOneRef = useRef(null);
+  const moonflowerTwoRef = useRef(null);
+  const moonflowerThreeRef = useRef(null);
+  const moonflowerFourRef = useRef(null);
+  const moonflowerFiveRef = useRef(null);
 
   // conversation variables
   let index = 0;
@@ -41,6 +41,130 @@ function GreenLand({
       "I am looking for moonflowers for my village. Can you help me gather 5 more?",
   };
 
+  // Function to check for collision between two elements
+  function isColliding(rect1, rect2) {
+    return !(
+      rect1.right < rect2.left ||
+      rect1.left > rect2.right ||
+      rect1.bottom < rect2.top ||
+      rect1.top > rect2.bottom
+    );
+  }
+
+  // Function to get the position and size of an element
+  function getRect(element) {
+    const rect = element.getBoundingClientRect();
+    return {
+      top: rect.top,
+      bottom: rect.bottom,
+      left: rect.left,
+      right: rect.right,
+    };
+  }
+
+  function handleSpecificKeys(event) {
+     // Access the DOM element using the ref
+     const moonflowerOneElement = moonflowerOneRef.current;
+     const moonflowerTwoElement = moonflowerTwoRef.current;
+     const moonflowerThreeElement = moonflowerThreeRef.current;
+     const moonflowerFourElement = moonflowerFourRef.current;
+     const moonflowerFiveElement = moonflowerFiveRef.current;
+     const moonflowerElements = [
+       moonflowerOneElement,
+       moonflowerTwoElement,
+       moonflowerThreeElement,
+       moonflowerFourElement,
+       moonflowerFiveElement,
+     ];
+     const moonFlowerRectangles = [];
+    // Function to continuously check for collision
+    function checkCollision(obstacles) {
+      setPosition((prev) => {
+        const playerRect = {
+          top: prev.y,
+          bottom: prev.y + 32,
+          left: prev.x,
+          right: prev.x + 32,
+        };
+
+        obstacles.forEach((el, index) => {
+          if (isColliding(playerRect, el)) {
+            // Handle collision here
+            console.log("update")
+            const currentFlower = moonflowerElements[index];
+            currentFlower.style.display = "none";
+            // increase number of collected moonflowers
+            //!!!!!!!!!!!!!! for some reason this gets executed twice, thats why I am increasing ocunt by 0.5, need to fix
+            flowersCollected.current = flowersCollected.current+0.5;
+            // get flower id to rmeove the same object from the level context 
+            const flowerId = currentFlower.id;
+            // also the objects need to be removed form the levelContext
+            greenLandObjectCenterPositions.current.forEach((el, index) => {
+              if(el.flower) {
+                console.log(flowerId)
+                if (el.flower === flowerId) {
+                  greenLandInitialObjectPositions.current.splice(index, 1);
+                  greenLandObjectCenterPositions.current.splice(index, 1);
+                }
+              }
+            })
+          }
+        });
+
+        return prev;
+      });
+    }
+    if (event.key === "e") {
+      // Check if the ref is defined and the corresponding DOM element exists
+      console.log(greenLandInitialObjectPositions.current)
+      if (
+        moonflowerOneElement &&
+        moonflowerTwoElement &&
+        moonflowerThreeElement &&
+        moonflowerFourElement &&
+        moonflowerFiveElement
+      ) {
+        moonflowerElements.forEach((el) => {
+          moonFlowerRectangles.push(getRect(el));
+        });
+       
+        checkCollision(moonFlowerRectangles);
+
+        // Remove the DOM element
+        // moonflowerOneElement.style.display = "none";
+      }
+    }
+  }
+
+  // Add useEffect to play audio when component mounts
+  useEffect(() => {
+    // Play the audio
+    if (audioRef.current) {
+      audioRef.current.play().catch((error) => {
+        console.error("Failed to play audio:", error);
+      });
+    }
+  }, []);
+  // need event listener here to check for collioions with flowers
+
+  useEffect(() => {
+    window.addEventListener("keydown", handleSpecificKeys);
+    return () => {
+      window.removeEventListener("keydown", handleSpecificKeys);
+    };
+  }, []);
+  // when pressing e the object should be removed if it is a flower that the player can collect
+  // case "e": //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  //!!!!!!!!!!!!!!!!!!!!!!!!!! this event listener should go into greenland and then handle removing flower div THERE!!!
+  // if(currentCollision){
+  //   if(currentCollision[0].flower){
+  //     // remove flower form collision objects
+  //     greenLandObjectCenterPositions.current.splice([currentCollision[1]], 1), // in currentColliion the collision object and its index are saved
+  //     greenLandInitialObjectPositions.currnet.splice([currentCollision[1]],1)
+  //   }
+  // }
+  // break;
+
   function typeWriter() {
     if (index < currentText.length) {
       npcTextBox.innerHTML += currentText.charAt(index);
@@ -51,6 +175,7 @@ function GreenLand({
 
   const startConversation = async () => {
     try {
+      console.log(npcTextBox);
       currentText = npxText.firstSentence;
       typeWriter();
       await new Promise((resolve) => {
@@ -79,6 +204,13 @@ function GreenLand({
       console.log(error);
     }
   };
+   // Check if all flowers are collected
+   useEffect(() => {
+    console.log("status:",flowersCollected.current)
+    if (flowersCollected.current === 5) {
+      endGame();
+    }
+  }, [flowersCollected.current]);
 
   useEffect(() => {
     if (conversation === true) {
@@ -89,11 +221,11 @@ function GreenLand({
   // update positions of objects when screen srolls
   useEffect(() => {
     let updatedPositions = [];
-    for (let i = 0; i < greenLandInitialObjectPositions.length; i++) {
+    for (let i = 0; i < greenLandInitialObjectPositions.current.length; i++) {
       updatedPositions.push({
-        ...greenLandInitialObjectPositions[i],
-        top: greenLandInitialObjectPositions[i].top + backgroundPosition[1],
-        left: greenLandInitialObjectPositions[i].left + backgroundPosition[0],
+        ...greenLandInitialObjectPositions.current[i],
+        top: greenLandInitialObjectPositions.current[i].top + backgroundPosition[1],
+        left: greenLandInitialObjectPositions.current[i].left + backgroundPosition[0],
       });
     }
 
@@ -173,28 +305,38 @@ function GreenLand({
       </div>
       <div
         className="moonflower"
+        ref={moonflowerOneRef}
+        id="moonflowerOne"
         style={{ position: "absolute", top: 80, left: 150 }}
       ></div>
       <div
         className="moonflower"
+        ref={moonflowerTwoRef}
+        id="moonflowerTwo"
         style={{ position: "absolute", top: 20, left: 850 }}
       ></div>
       <div
         className="moonflower"
+        ref={moonflowerThreeRef}
+        id="moonflowerThree"
         style={{ position: "absolute", top: 420, left: 850 }}
       ></div>
       <div
         className="moonflower"
+        ref={moonflowerFourRef}
+        id="moonflowerFour"
         style={{ position: "absolute", top: 720, left: 150 }}
       ></div>
       <div
         className="moonflower"
+        ref={moonflowerFiveRef}
+        id="moonflowerFive"
         style={{ position: "absolute", top: 820, left: 1650 }}
       ></div>
       <audio autoPlay ref={audioRef}>
-                <source src={myAudioFile} type="audio/mpeg"/>
-                Your browser does not support the audio element.
-            </audio>
+        <source src={myAudioFile} type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
     </div>
   );
 }

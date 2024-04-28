@@ -1,6 +1,6 @@
 
 
-export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv, setNpcPosition) {
+export function updatePlayerPosition(direction, borders, spriteSize, backgroundElement, setBackgroundPosition, setPosition, isScreenMoving, greenLandObjectCenterPositions, setConv, setNpcPosition, currentCollision) {
     //logic for updating player position
     setPosition((previousPosition) => {
         if (backgroundElement != null) {
@@ -68,6 +68,7 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
 
         let newPosition;
         //also check for collision of Player with objects
+        
         for (const object of greenLandObjectCenterPositions.current) {
             
             const distance = Math.sqrt(
@@ -86,7 +87,6 @@ export function updatePlayerPosition(direction, borders, spriteSize, backgroundE
                 );    
                 // Check if distance is less than or equal to the sum of radii
                 if (updatedDistance < object.radius) {
-                    
                     // player chould not move into object
                     newPosition = {
                         x: previousPosition.x,

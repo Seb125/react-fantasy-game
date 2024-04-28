@@ -36,7 +36,7 @@ function MainScreen() {
         ? 1792 - spriteSize
         : window.innerWidth - spriteSize,
   });
-  const { greenLandObjectCenterPositions, textBox } = useContext(LevelContext);
+  const { greenLandObjectCenterPositions, greenLandInitialObjectPositions } = useContext(LevelContext);
   // const initialObjectPositions = [{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]; // object positions need to updated with reference to original positions
   // const objectCenterPositions = useRef([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
   // Loop Variables
@@ -46,7 +46,7 @@ function MainScreen() {
 
   // check if there is a conversation with a NPC
   const [conv, setConv] = useState(false);
-
+  
   const frameTime = 60 / 1000;
 
   const framesPerRow = 4; // Number of sprites in each row
@@ -258,7 +258,7 @@ function MainScreen() {
   return (
     <div>
     {/* <button onClick={doSomething}>Log Something</button> */}
-    <GreenLand backgroundPosition={backgroundPosition} position={position} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv} npcPosition={npcPosition}/>
+    <GreenLand backgroundPosition={backgroundPosition} position={position} setPosition={setPosition} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv} npcPosition={npcPosition} endGame={endGame}/>
     </div>
   );
 }

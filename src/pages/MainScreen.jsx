@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { updatePlayerPosition } from "../playerUtils";
 // Maps
 import GreenLand from "../maps/GreenLand";
+import Inventory from "../components/Inventory";
 import { LevelContext } from "../context/level.context";
 
 
@@ -19,6 +20,7 @@ function MainScreen() {
   const backgroundElement = useRef(null);
   const [backgroundPosition, setBackgroundPosition] = useState([0, 0]);
   const isScreenMoving = useRef(false); // Track if the screen is moving
+  const [inventory, setInventory] = useState(false); // player inventory to store collected items
   const pressedKeys = useRef({
     up: false,
     down: false,
@@ -36,7 +38,7 @@ function MainScreen() {
         ? 1792 - spriteSize
         : window.innerWidth - spriteSize,
   });
-  const { greenLandObjectCenterPositions, greenLandInitialObjectPositions } = useContext(LevelContext);
+  const { greenLandObjectCenterPositions,  inventoryItems} = useContext(LevelContext);
   // const initialObjectPositions = [{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]; // object positions need to updated with reference to original positions
   // const objectCenterPositions = useRef([{top: 100, left: 50, radius: 60}, {top: 400, left: 70, radius: 90}]); // for collision detection
   // Loop Variables
@@ -155,6 +157,9 @@ function MainScreen() {
           direction.current.x = 3;
           pressedKeys.current.right = true;
           break;
+        case "q":
+          setInventory(true);
+          break;
         default:
           break;
       }
@@ -256,9 +261,10 @@ function MainScreen() {
   }
 
   return (
-    <div>
+    <div style={{position: "relative"}}>
     {/* <button onClick={doSomething}>Log Something</button> */}
     <GreenLand backgroundPosition={backgroundPosition} position={position} setPosition={setPosition} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv} npcPosition={npcPosition} endGame={endGame}/>
+    {inventory? <Inventory />: ""}
     </div>
   );
 }

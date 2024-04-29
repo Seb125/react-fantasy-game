@@ -91,3 +91,13 @@
   z-index: 0;
   
 }
+
+#inventory {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 500px;
+  height: 500px;
+  background-image: url("./assets/inventory.png");
+  background-size: cover;
+}

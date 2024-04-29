@@ -64,11 +64,14 @@ function LevelProviderWrapper(props) {
     { top: 830, left: 1650, radius: 35, flower: "moonflowerFive" },
   ]); // for collision detection
 
+  const inventoryItems = useRef([{name: "Flower"}, {name: "Sword"}]);
+
   return (
     <LevelContext.Provider
       value={{
         greenLandInitialObjectPositions,
         greenLandObjectCenterPositions,
+        inventoryItems
       }}
     >
       {props.children}

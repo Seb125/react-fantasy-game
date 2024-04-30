@@ -2,6 +2,8 @@ import Player from "../components/Player";
 import { useState, useEffect, useRef, useContext } from "react";
 import { LevelContext } from "../context/level.context";
 import myAudioFile from "../assets/greenland-music.mp3";
+import moonflower from "../assets/moonflower-inventory.png";
+
 
 function GreenLand({
   backgroundPosition,
@@ -14,7 +16,7 @@ function GreenLand({
   npcPosition,
   endGame
 }) {
-  const { greenLandInitialObjectPositions, greenLandObjectCenterPositions } =
+  const { greenLandInitialObjectPositions, greenLandObjectCenterPositions, inventoryItems} =
     useContext(LevelContext);
 
   // Keeping track of collected moonflowers
@@ -90,11 +92,11 @@ function GreenLand({
         obstacles.forEach((el, index) => {
           if (isColliding(playerRect, el)) {
             // Handle collision here
-            console.log("update")
+            
             const currentFlower = moonflowerElements[index];
             currentFlower.style.display = "none";
             // increase number of collected moonflowers
-            //!!!!!!!!!!!!!! for some reason this gets executed twice, thats why I am increasing ocunt by 0.5, need to fix
+            //!!!!!!!!!!!!!! for some reason this gets executed twice in my dev environment
             flowersCollected.current = flowersCollected.current+1;
             // get flower id to rmeove the same object from the level context 
             const flowerId = currentFlower.id;
@@ -108,6 +110,8 @@ function GreenLand({
                 }
               }
             })
+            // add collected flower to the inventory
+            inventoryItems.current.push({ name: <img src={moonflower} /> })
           }
         });
 

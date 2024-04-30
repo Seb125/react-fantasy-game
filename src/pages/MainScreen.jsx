@@ -158,7 +158,9 @@ function MainScreen() {
           pressedKeys.current.right = true;
           break;
         case "q":
-          setInventory(true);
+          setInventory((prev)=>{
+            return !prev;
+          } );
           break;
         default:
           break;

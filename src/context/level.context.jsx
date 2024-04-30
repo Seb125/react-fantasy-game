@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-
+import moonflower from "../assets/moonflower-inventory.png";
 const LevelContext = React.createContext();
 
 function LevelProviderWrapper(props) {
@@ -64,14 +64,15 @@ function LevelProviderWrapper(props) {
     { top: 830, left: 1650, radius: 35, flower: "moonflowerFive" },
   ]); // for collision detection
 
-  const inventoryItems = useRef([{name: "Flower"}, {name: "Sword"}]);
+  const inventoryItems = useRef([
+  ]);
 
   return (
     <LevelContext.Provider
       value={{
         greenLandInitialObjectPositions,
         greenLandObjectCenterPositions,
-        inventoryItems
+        inventoryItems,
       }}
     >
       {props.children}

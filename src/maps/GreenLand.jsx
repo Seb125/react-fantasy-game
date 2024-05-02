@@ -1,9 +1,9 @@
 import Player from "../components/Player";
 import { useState, useEffect, useRef, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { LevelContext } from "../context/level.context";
 import myAudioFile from "../assets/greenland-music.mp3";
 import moonflower from "../assets/moonflower-inventory.png";
-
 
 function GreenLand({
   backgroundPosition,
@@ -14,11 +14,14 @@ function GreenLand({
   conversation,
   setConverstaion,
   npcPosition,
-  endGame
+  endGame,
 }) {
-  const { greenLandInitialObjectPositions, greenLandObjectCenterPositions, inventoryItems} =
-    useContext(LevelContext);
-
+  const {
+    greenLandInitialObjectPositions,
+    greenLandObjectCenterPositions,
+    inventoryItems,
+  } = useContext(LevelContext);
+  const navigate = useNavigate();
   // Keeping track of collected moonflowers
   const flowersCollected = useRef(0);
   // Add a reference to the audio element
@@ -41,6 +44,7 @@ function GreenLand({
     firstSentence: "Hello Stranger. I saw you coming this way.",
     secondSentence:
       "I am looking for moonflowers for my village. Can you help me gather 5 more? Use (E) to collect a flower",
+    questCompleted: "Thank you. Please come to my village to accept a small gift in return.",
   };
 
   // Function to check for collision between two elements
@@ -65,20 +69,20 @@ function GreenLand({
   }
 
   function handleSpecificKeys(event) {
-     // Access the DOM element using the ref
-     const moonflowerOneElement = moonflowerOneRef.current;
-     const moonflowerTwoElement = moonflowerTwoRef.current;
-     const moonflowerThreeElement = moonflowerThreeRef.current;
-     const moonflowerFourElement = moonflowerFourRef.current;
-     const moonflowerFiveElement = moonflowerFiveRef.current;
-     const moonflowerElements = [
-       moonflowerOneElement,
-       moonflowerTwoElement,
-       moonflowerThreeElement,
-       moonflowerFourElement,
-       moonflowerFiveElement,
-     ];
-     const moonFlowerRectangles = [];
+    // Access the DOM element using the ref
+    const moonflowerOneElement = moonflowerOneRef.current;
+    const moonflowerTwoElement = moonflowerTwoRef.current;
+    const moonflowerThreeElement = moonflowerThreeRef.current;
+    const moonflowerFourElement = moonflowerFourRef.current;
+    const moonflowerFiveElement = moonflowerFiveRef.current;
+    const moonflowerElements = [
+      moonflowerOneElement,
+      moonflowerTwoElement,
+      moonflowerThreeElement,
+      moonflowerFourElement,
+      moonflowerFiveElement,
+    ];
+    const moonFlowerRectangles = [];
     // Function to continuously check for collision
     function checkCollision(obstacles) {
       setPosition((prev) => {
@@ -92,26 +96,26 @@ function GreenLand({
         obstacles.forEach((el, index) => {
           if (isColliding(playerRect, el)) {
             // Handle collision here
-            
+
             const currentFlower = moonflowerElements[index];
             currentFlower.style.display = "none";
             // increase number of collected moonflowers
             //!!!!!!!!!!!!!! for some reason this gets executed twice in my dev environment
-            flowersCollected.current = flowersCollected.current+1;
-            // get flower id to rmeove the same object from the level context 
+            flowersCollected.current = flowersCollected.current + 1;
+            // get flower id to rmeove the same object from the level context
             const flowerId = currentFlower.id;
             // also the objects need to be removed form the levelContext
             greenLandObjectCenterPositions.current.forEach((el, index) => {
-              if(el.flower) {
-                console.log(flowerId)
+              if (el.flower) {
+                console.log(flowerId);
                 if (el.flower === flowerId) {
                   greenLandInitialObjectPositions.current.splice(index, 1);
                   greenLandObjectCenterPositions.current.splice(index, 1);
                 }
               }
-            })
+            });
             // add collected flower to the inventory
-            inventoryItems.current.push({ name: <img src={moonflower} /> })
+            inventoryItems.current.push({ name: <img src={moonflower} /> });
           }
         });
 
@@ -120,7 +124,7 @@ function GreenLand({
     }
     if (event.key === "e") {
       // Check if the ref is defined and the corresponding DOM element exists
-      console.log(greenLandInitialObjectPositions.current)
+      console.log(greenLandInitialObjectPositions.current);
       if (
         moonflowerOneElement &&
         moonflowerTwoElement &&
@@ -131,7 +135,7 @@ function GreenLand({
         moonflowerElements.forEach((el) => {
           moonFlowerRectangles.push(getRect(el));
         });
-       
+
         checkCollision(moonFlowerRectangles);
 
         // Remove the DOM element
@@ -157,17 +161,24 @@ function GreenLand({
       window.removeEventListener("keydown", handleSpecificKeys);
     };
   }, []);
-  // when pressing e the object should be removed if it is a flower that the player can collect
-  // case "e": //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  //!!!!!!!!!!!!!!!!!!!!!!!!!! this event listener should go into greenland and then handle removing flower div THERE!!!
-  // if(currentCollision){
-  //   if(currentCollision[0].flower){
-  //     // remove flower form collision objects
-  //     greenLandObjectCenterPositions.current.splice([currentCollision[1]], 1), // in currentColliion the collision object and its index are saved
-  //     greenLandInitialObjectPositions.currnet.splice([currentCollision[1]],1)
-  //   }
-  // }
-  // break;
+
+  const levelOutro =  async () => {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve("done");
+      }, speed * currentText.length + 5000);
+    });
+    const gameContainer = document.getElementById("game-container");
+    gameContainer.style.transition = "opacity 15s"
+    gameContainer.style.opacity = "0";
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        resolve("done");
+      }, speed * currentText.length + 3000);
+    });
+    navigate("/game-over")
+
+  }
 
   function typeWriter() {
     if (index < currentText.length) {
@@ -179,42 +190,43 @@ function GreenLand({
 
   const startConversation = async () => {
     try {
-      console.log(npcTextBox);
-      currentText = npxText.firstSentence;
-      typeWriter();
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("done");
-        }, speed * currentText.length + 2000);
-      });
-      npcTextBox.innerHTML = "";
-      currentText = npxText.secondSentence;
-      index = 0;
-      typeWriter();
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("done");
-        }, speed * currentText.length + 2000);
-      });
-      npcTextBox.innerHTML = "";
-      npcTextBox.style.display = "none";
-      await new Promise((resolve) => {
-        setTimeout(() => {
-          resolve("done");
-        }, speed * currentText.length + 6000);
-      });
+      if (!(flowersCollected.current > 4)) {
+        currentText = npxText.firstSentence;
+        typeWriter();
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("done");
+          }, speed * currentText.length + 2000);
+        });
+        npcTextBox.innerHTML = "";
+        currentText = npxText.secondSentence;
+        index = 0;
+        typeWriter();
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("done");
+          }, speed * currentText.length + 2000);
+        });
+        npcTextBox.innerHTML = "";
+        npcTextBox.style.display = "none";
+        await new Promise((resolve) => {
+          setTimeout(() => {
+            resolve("done");
+          }, speed * currentText.length + 6000);
+        });
+      } else {
+        console.log("all flowers collected")
+        currentText = npxText.questCompleted;
+        typeWriter();
+        endGame();
+        levelOutro();
+      }
       setConverstaion(false);
     } catch (error) {
       console.log(error);
     }
   };
-   // Check if all flowers are collected
-   useEffect(() => {
-    console.log("status:",flowersCollected.current)
-    if (flowersCollected.current === 5) {
-      endGame();
-    }
-  }, [flowersCollected.current]);
+
 
   useEffect(() => {
     if (conversation === true) {
@@ -228,8 +240,12 @@ function GreenLand({
     for (let i = 0; i < greenLandInitialObjectPositions.current.length; i++) {
       updatedPositions.push({
         ...greenLandInitialObjectPositions.current[i],
-        top: greenLandInitialObjectPositions.current[i].top + backgroundPosition[1],
-        left: greenLandInitialObjectPositions.current[i].left + backgroundPosition[0],
+        top:
+          greenLandInitialObjectPositions.current[i].top +
+          backgroundPosition[1],
+        left:
+          greenLandInitialObjectPositions.current[i].left +
+          backgroundPosition[0],
       });
     }
 

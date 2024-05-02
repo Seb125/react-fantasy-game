@@ -254,8 +254,6 @@ function MainScreen() {
       window.cancelAnimationFrame(animationID.current);
     }
 
-    // Redirect to Game Over Screen
-    navigate("/game-over");
   };
 
   const doSomething = () => {
@@ -263,7 +261,7 @@ function MainScreen() {
   }
 
   return (
-    <div style={{position: "relative"}}>
+    <div style={{position: "relative", backgroundColor: "black"}}>
     {/* <button onClick={doSomething}>Log Something</button> */}
     <GreenLand backgroundPosition={backgroundPosition} position={position} setPosition={setPosition} frameX={frameX} frameY={frameY} conversation={conv} setConverstaion={setConv} npcPosition={npcPosition} endGame={endGame}/>
     {inventory? <Inventory />: ""}

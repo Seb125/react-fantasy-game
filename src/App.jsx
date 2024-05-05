@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import MainScreen from "./pages/MainScreen";
+import MainScreenContainer from "./pages/MainScreenContainer";
 import StartScreen from "./pages/StartScreen";
 import GameOver from "./pages/GameOver";
 import Test from "./pages/Test";
@@ -49,7 +50,7 @@ function App() {
           path="/game"
           element={
             <IsPrivate>
-              <MainScreen />
+              <MainScreenContainer />
             </IsPrivate>
           }
         />
